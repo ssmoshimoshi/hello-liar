@@ -1,0 +1,11 @@
+{
+  "Common": {
+    "title": "Hello Liar",
+    "doubtBtn": "Saya Ragu",
+    "releaseBtn": "Lepaskan",
+    "navHome": "Jelajah",
+    "navWrite": "Bilik Suara",
+    "writePlaceholder": "Tuliskan kebohongan Anda di sini...",
+    "destroyedNotice": "Kebohongan Hancur"
+  }
+}

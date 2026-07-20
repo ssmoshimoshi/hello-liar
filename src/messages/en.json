@@ -1,0 +1,11 @@
+{
+  "Common": {
+    "title": "Hello Liar",
+    "doubtBtn": "I Doubt It",
+    "releaseBtn": "Release",
+    "navHome": "Explore",
+    "navWrite": "Confession Booth",
+    "writePlaceholder": "Write your lie here...",
+    "destroyedNotice": "Lie Destroyed"
+  }
+}
