@@ -60,7 +60,10 @@ export default async function Home({
       {/* Stories Feed */}
       <section className="py-16 md:py-24">
         {/* Sort Tabs */}
-        <div className="mb-12 flex flex-wrap gap-4 border-b pb-4" style={{ borderColor: 'var(--gray-200)' }}>
+        <div 
+          className="mb-12 flex overflow-x-auto hide-scrollbar gap-6 border-b pb-4 w-full flex-nowrap whitespace-nowrap" 
+          style={{ borderColor: 'var(--gray-200)', WebkitOverflowScrolling: 'touch' }}
+        >
           {[
             { id: 'recent', label: t('sortRecent') },
             { id: 'resonance', label: t('sortResonance') },
