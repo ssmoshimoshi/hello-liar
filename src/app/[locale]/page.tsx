@@ -151,7 +151,11 @@ export default async function Home({
                   </div>
                   
                   {/* Story text */}
-                  <p className="text-3xl md:text-4xl lg:text-5xl leading-tight md:leading-tight font-discipline transition-transform duration-700 group-hover:scale-105 break-words break-all text-[var(--foreground)]">
+                  <p className={`font-discipline transition-transform duration-700 group-hover:scale-105 text-[var(--foreground)] ${
+                    content.length < 50 ? 'text-4xl md:text-6xl lg:text-7xl leading-tight' : 
+                    content.length < 150 ? 'text-3xl md:text-4xl lg:text-5xl leading-tight' : 
+                    'text-xl md:text-2xl lg:text-3xl leading-snug'
+                  }`}>
                     &ldquo;{content}&rdquo;
                   </p>
 
