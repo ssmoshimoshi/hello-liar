@@ -107,7 +107,7 @@ export default async function Home({
             return (
               <article 
                 key={lie.id} 
-                className="group py-20 md:py-40 transition-colors flex flex-col justify-center min-h-[50vh]"
+                className="group py-32 md:py-40 transition-colors flex flex-col justify-center min-h-[50vh]"
               >
                 <Link href={`/${locale}/read/${lie.id}`} className="block">
                   {/* Top Meta Row */}

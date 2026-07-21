@@ -73,7 +73,7 @@ export default async function RootLayout({
       lang={locale}
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className="min-h-full flex flex-col font-serif bg-background text-foreground relative pb-24 md:pb-0">
+      <body suppressHydrationWarning className="min-h-full flex flex-col font-serif bg-background text-foreground relative pb-32 md:pb-0">
         <NextIntlClientProvider messages={messages}>
           <FloatingNav />
           <main className="flex-grow flex flex-col">

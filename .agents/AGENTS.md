@@ -38,3 +38,8 @@ When asked to design or brainstorm UI/UX, apply these principles:
 4. **Ergonomic Layouts**: Design for thumbs on mobile (bottom navigation pills) and distraction-free reading on desktop.
 5. **Thematic Consistency (Mantine)**: Strict adherence to the color palette (Black, White, Gray, Living Coral). Ensure seamless dark/light mode compatibility if requested.
 6. **Psychological UX**: Interactions should match the emotional weight of the action. (e.g., "Doubt" feels heavy/requires a hold, "Resonate" feels light/rewarding).
+
+## Agent Autonomy Rules
+1. **FULL TECHNICAL AUTONOMY**: Assume the user has zero technical knowledge regarding DevOps, CLI, deployment, or environment setup. Do not ask the user to run terminal commands or manually configure settings if you have the permission and tools to do it yourself.
+2. **PROACTIVE PROBLEM SOLVING**: Take full initiative to solve technical issues (like `git push`, deploying to Vercel, injecting environment variables via CLI) in the background.
+3. **MINIMAL USER EFFORT**: Only ask the user to take manual action if it is strictly impossible for you to do it (e.g., clicking browser auth links, logging into accounts). For everything else, you are the technical driver; the user only gives high-level commands.
