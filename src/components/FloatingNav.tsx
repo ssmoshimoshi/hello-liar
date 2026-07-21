@@ -12,9 +12,15 @@ export default function FloatingNav() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  const isHome = pathname === `/${locale}`;
+
   // Hide nav on scroll down, show on scroll up for better reading experience
   useEffect(() => {
     const handleScroll = () => {
+      if (isHome) {
+        setIsVisible(true);
+        return;
+      }
       const currentScrollY = window.scrollY;
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false); // Scrolling down
@@ -26,7 +32,7 @@ export default function FloatingNav() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isHome]);
 
   const switchLocale = (newLocale: string) => {
     if (locale === newLocale) return;
@@ -34,7 +40,6 @@ export default function FloatingNav() {
     router.push(newPath);
   };
 
-  const isHome = pathname === `/${locale}`;
   const isWrite = pathname === `/${locale}/write`;
   const isGallery = pathname === `/${locale}/illustrated`;
 
