@@ -148,7 +148,7 @@ export default async function Home({
                   </div>
                   
                   {/* Story text */}
-                  <p className="text-4xl md:text-5xl lg:text-6xl leading-tight md:leading-tight font-[var(--font-discipline)] transition-transform duration-700 group-hover:translate-x-2 break-words break-all text-[var(--foreground)]">
+                  <p className="text-4xl md:text-5xl lg:text-6xl leading-tight md:leading-tight font-discipline transition-transform duration-700 group-hover:translate-x-2 break-words break-all text-[var(--foreground)]">
                     &ldquo;{content}&rdquo;
                   </p>
 

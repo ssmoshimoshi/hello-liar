@@ -85,7 +85,7 @@ export default function WritePage() {
           value={content}
           onChange={handleChange}
           placeholder={t('writePlaceholder')}
-          className="w-full bg-transparent border-none outline-none resize-none text-4xl md:text-5xl lg:text-7xl font-[var(--font-discipline)] leading-tight text-center focus:ring-0 placeholder:text-white/40 transition-all duration-700 relative z-10"
+          className="w-full bg-transparent border-none outline-none resize-none text-4xl md:text-5xl lg:text-7xl font-discipline leading-tight text-center focus:ring-0 placeholder:text-white/40 transition-all duration-700 relative z-10"
           style={{ 
             minHeight: '40vh',
             color: '#ffffff',
