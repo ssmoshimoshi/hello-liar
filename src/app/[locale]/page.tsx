@@ -86,7 +86,7 @@ export default async function Home({
         >
           {locale === 'en' ? 'Anonymous Confessions' : 'Pengakuan Anonim'}
         </p>
-        <h1 className="text-[2.5rem] leading-[1.1] md:text-6xl lg:text-7xl font-[var(--font-playfair)] font-black tracking-tight max-w-3xl break-words hyphens-auto">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl leading-tight md:leading-tight font-discipline tracking-tight max-w-3xl break-words hyphens-auto">
           {locale === 'en' 
             ? 'Everyone lies. Some just write it down.' 
             : 'Semua orang berbohong. Beberapa menuliskannya.'
