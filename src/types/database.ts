@@ -15,21 +15,42 @@ export interface Database {
           content_id: string
           content_en: string
           doubt_count: number
+          resonate_count: number
+          illustrated: boolean
+          illustration_url: string | null
+          illustration_created_at: string | null
           created_at: string
+          updated_at: string
+          total_shares: number
+          instagram_shares: number
         }
         Insert: {
           id?: string
           content_id: string
           content_en: string
           doubt_count?: number
+          resonate_count?: number
+          illustrated?: boolean
+          illustration_url?: string | null
+          illustration_created_at?: string | null
           created_at?: string
+          updated_at?: string
+          total_shares?: number
+          instagram_shares?: number
         }
         Update: {
           id?: string
           content_id?: string
           content_en?: string
           doubt_count?: number
+          resonate_count?: number
+          illustrated?: boolean
+          illustration_url?: string | null
+          illustration_created_at?: string | null
           created_at?: string
+          updated_at?: string
+          total_shares?: number
+          instagram_shares?: number
         }
         Relationships: []
       }
@@ -41,6 +62,19 @@ export interface Database {
       increment_doubt: {
         Args: {
           lie_id: string
+        }
+        Returns: undefined
+      }
+      increment_resonate: {
+        Args: {
+          lie_id: string
+        }
+        Returns: undefined
+      }
+      mark_illustrated: {
+        Args: {
+          lie_id: string
+          img_url: string
         }
         Returns: undefined
       }

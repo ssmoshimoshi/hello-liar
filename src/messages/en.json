@@ -1,11 +1,34 @@
 {
   "Common": {
     "title": "Hello Liar",
-    "doubtBtn": "I Doubt It",
+    "resonateBtn": "I FEEL IT",
+    "doubtBtn": "DOUBT",
+    "shareIGBtn": "Share to IG Story",
+    "copyLinkBtn": "Copy Link",
     "releaseBtn": "Release",
     "navHome": "Explore",
     "navWrite": "Confession Booth",
     "writePlaceholder": "Write your lie here...",
-    "destroyedNotice": "Lie Destroyed"
+    "badgeIllustrated": "ILLUSTRATED",
+    "badgePending": "PENDING",
+    "badgeTrending": "TRENDING",
+    "badgeHighDoubt": "HIGH DOUBT",
+    "sortRecent": "Recent",
+    "sortResonance": "Most Resonance",
+    "sortDoubt": "Most Doubt",
+    "sortIllustrated": "Illustrated",
+    "sortPending": "Pending",
+    "illustrationPlaceholder": "Waiting for illustration...",
+    "navGallery": "Gallery",
+    "navAdmin": "Studio",
+    "galleryTitle": "Illustrated Truths",
+    "gallerySubtitle": "Where confessed lies become art.",
+    "adminTitle": "Creator Studio",
+    "adminPending": "Pending (20-24)",
+    "adminReady": "Ready (25+)",
+    "adminPublished": "Published",
+    "btnIllustrate": "Illustrate",
+    "uploadTitle": "Upload Art",
+    "uploadBtn": "Publish Art"
   }
 }

@@ -1,11 +1,34 @@
 {
   "Common": {
     "title": "Hello Liar",
-    "doubtBtn": "Saya Ragu",
+    "resonateBtn": "SAYA RASAKAN INI",
+    "doubtBtn": "RAGU",
+    "shareIGBtn": "Bagikan ke IG Story",
+    "copyLinkBtn": "Salin Tautan",
     "releaseBtn": "Lepaskan",
     "navHome": "Jelajah",
     "navWrite": "Bilik Suara",
     "writePlaceholder": "Tuliskan kebohongan Anda di sini...",
-    "destroyedNotice": "Kebohongan Hancur"
+    "badgeIllustrated": "TERILUSTRASI",
+    "badgePending": "PENDING",
+    "badgeTrending": "TRENDING",
+    "badgeHighDoubt": "BANYAK DIRAGUKAN",
+    "sortRecent": "Terbaru",
+    "sortResonance": "Paling Dirasakan",
+    "sortDoubt": "Paling Diragukan",
+    "sortIllustrated": "Terilustrasi",
+    "sortPending": "Pending",
+    "illustrationPlaceholder": "Menunggu ilustrasi...",
+    "navGallery": "Galeri",
+    "navAdmin": "Studio",
+    "galleryTitle": "Kebenaran yang Tergambar",
+    "gallerySubtitle": "Tempat kebohongan menjadi seni.",
+    "adminTitle": "Studio Kreator",
+    "adminPending": "Pending (20-24)",
+    "adminReady": "Siap (25+)",
+    "adminPublished": "Selesai",
+    "btnIllustrate": "Gambar Ini",
+    "uploadTitle": "Unggah Seni",
+    "uploadBtn": "Terbitkan Seni"
   }
 }

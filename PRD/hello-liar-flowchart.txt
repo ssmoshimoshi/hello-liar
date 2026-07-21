@@ -1,0 +1,299 @@
+================================================================================
+                        HELLO LIAR - VISUAL FLOWCHARTS
+================================================================================
+
+FLOWCHART 1: USER JOURNEY (Confessor → Resonator → Amplifier)
+================================================================================
+
+START
+  │
+  ├─────────────────────────────────────────────────────────────────┐
+  │                                                                 │
+  ▼                                                                 │
+┌──────────────┐                                                   │
+│   Visit Web  │                                                   │
+└──────┬───────┘                                                   │
+       │                                                            │
+       ├─────────────────────────┬──────────────────────┐          │
+       │                         │                      │          │
+       ▼                         ▼                      ▼          │
+    /write               /feed (Home)          /illustrated       │
+   (Submit)              (Browse)              (Gallery)          │
+       │                         │                      │          │
+       │         ┌───────────────┼───────────────┐     │          │
+       │         │               │               │     │          │
+       ▼         ▼               ▼               ▼     ▼          │
+    [Type]   [Read Story]  [Click Share]  [View Art]  [Share]    │
+       │         │               │               │     │          │
+       ▼         ▼               ▼               ▼     ▼          │
+   [Release] [❤️ I FEEL IT]  [Copy Template]  [Copy Link]  [Post to IG]
+       │         │               │               │     │          │
+       ▼         ▼               ▼               ▼     ▼          │
+   SUBMIT    INCREMENT        CLIPBOARD       CLIPBOARD     IG STORY
+  resonate=0  resonate_count      │              │         │      │
+              doubt_count         │              │         │      │
+       │         │                │              │         │      │
+       └─────────┼────────────────┼──────────────┼────────┼─────┘
+                 │                │              │        │
+                 └────────────────┴──────────────┴────────┘
+                         VIRAL LOOP
+                         (New Users)
+
+
+FLOWCHART 2: RESONANCE-TO-ILLUSTRATION PIPELINE
+================================================================================
+
+STORY SUBMITTED (resonate_count = 0)
+       │
+       ▼
+WAITING FOR ENGAGEMENT
+       │
+    Monitor resonate_count
+       │
+       ├─ 0-5 ──────────► [LOW ENGAGEMENT]
+       │
+       ├─ 5-20 ─────────► [BUILDING] 
+       │
+       ├─ 20-24 ────────► [NEAR THRESHOLD] ⏳
+       │                  Creator gets alert
+       │
+       ▼
+HITS 25 I FEEL IT
+       │
+       ▼
+    ┌──────────────────────────────────┐
+    │  READY FOR ILLUSTRATION          │
+    │  - Appears in /admin/pending     │
+    │  - Creator reviews story         │
+    │  - Creator decides to illustrate │
+    └──────┬───────────────────────────┘
+           │
+           ▼
+    CREATOR ILLUSTRATES (manual work)
+           │
+           ▼
+    UPLOADS TO /admin/upload
+           │
+           ├─ Select story ID
+           │
+           ├─ Upload image (800x800)
+           │
+           └─ Generate social caption
+           │
+           ▼
+    DATABASE UPDATE
+           │
+           ├─ illustrated = TRUE
+           ├─ illustration_url = "..."
+           └─ illustration_created_at = now()
+           │
+           ▼
+    STORY MOVES TO GALLERY
+           │
+           ├─ Appears in /illustrated
+           ├─ Appears in /read/[id] (with illustration)
+           └─ Share buttons enabled
+           │
+           ▼
+    CREATOR POSTS TO INSTAGRAM
+           │
+           ├─ Instagram Feed or Story
+           ├─ Tags: #HelloLiar #Deeplie
+           └─ Link to web platform
+           │
+           ▼
+    AUDIENCE REPOSTS (VIRAL LOOP)
+           │
+           ├─ Followers share to their IG Stories
+           ├─ New users discover platform
+           └─ New submissions increase
+           │
+           ▼
+    CYCLE CONTINUES
+
+
+FLOWCHART 3: ENGAGEMENT BUTTON LOGIC
+================================================================================
+
+USER VISITS /read/[id]
+       │
+       ├─────────────────┬──────────────────────┐
+       │                 │                      │
+       ▼                 ▼                      ▼
+  [❤️ I FEEL IT]   [✗ Doubt]          [Share to IG]
+  (Primary)        (Secondary)        (Template)
+       │                 │                      │
+       ▼                 ▼                      ▼
+  Check localStorage    Check localStorage   Copy Modal
+  If already voted:    If already voted:    Shows preview
+  DISABLE button      DISABLE button           │
+       │                 │                    ▼
+       └─────────────────┴──────────────────── CLIPBOARD
+                 │
+                 ▼
+          (If first vote)
+                 │
+         ┌───────┴───────┐
+         │               │
+         ▼               ▼
+    ADD TO DB      SAVE TO localStorage
+    increment_     ['resonated_lies']
+    resonate()     or ['doubted_lies']
+         │               │
+         └───────┬───────┘
+                 │
+                 ▼
+          OPTIMISTIC UPDATE
+                 │
+          resonate_count++
+          or
+          doubt_count++
+                 │
+                 ▼
+          BUTTON DISABLED
+          1 second cooldown
+
+
+FLOWCHART 4: SORTING & CATEGORIZATION (HOME FEED)
+================================================================================
+
+/feed HOME PAGE
+       │
+       ├─── SORT OPTIONS
+       │         │
+       │    ┌────┼────┬────────┬──────────┐
+       │    │    │    │        │          │
+       ▼    ▼    ▼    ▼        ▼          ▼
+    [Recent]  [Most   [Most   [Illustrated] [Pending]
+               Resonance] Doubt]
+       │         │       │      │          │
+       ▼         ▼       ▼      ▼          ▼
+    Newest   Highest  Highest  Only      20-24
+    First    I FEEL   Doubt    illustrated resonance
+             IT       counts   stories
+       │         │       │      │          │
+       └─────────┴───────┴──────┴──────────┘
+                 │
+                 ▼
+         DISPLAY STORY CARDS
+                 │
+    ┌────────────┬────────────┬──────────────┐
+    │            │            │              │
+    ▼            ▼            ▼              ▼
+  Story Text  ❤️ Resonate  ✗ Doubt    Status Badge
+              Count        Count
+                                    🎨 ILLUSTRATED
+                                    ⏳ PENDING (23/25)
+                                    🔥 TRENDING
+                                    ⚠️ HIGH DOUBT
+
+
+FLOWCHART 5: CREATOR ADMIN WORKFLOW
+================================================================================
+
+/admin/dashboard
+       │
+       ├─────────────────┬──────────────┬──────────────┐
+       │                 │              │              │
+       ▼                 ▼              ▼              ▼
+   PENDING         READY TO          PUBLISHED    METRICS
+   (20-24)         ILLUSTRATE         (Illustrated) (Stats)
+                   (25+)
+       │                 │              │              │
+       │                 │              │              │
+       ▼                 ▼              ▼              ▼
+   Monitor       [View]  [Select]   View Thumb   Total Posts
+   Progress      [Illustrate]       [Repost]     Illustrated
+                 [Skip]             [Delete]     Avg Resonance
+       │                 │              │              │
+       │                 │              │              │
+       │                 ▼              │              │
+       │         CREATOR WORK          │              │
+       │         (External: Draw)      │              │
+       │                 │              │              │
+       │                 ▼              │              │
+       │         /admin/upload          │              │
+       │         - Select story ID      │              │
+       │         - Upload image         │              │
+       │         - Generate caption     │              │
+       │                 │              │              │
+       │                 ▼              │              │
+       │         UPDATE DB              │              │
+       │         - illustrated = TRUE   │              │
+       │         - illustration_url     │              │
+       │         - illustration_date    │              │
+       │                 │              │              │
+       │                 ▼              │              │
+       │         ✅ Success Modal       │              │
+       │         [Post to IG]           │              │
+       │                 │              │              │
+       │                 ▼              │              │
+       │         INSTAGRAM AUTO-POST    │              │
+       │         (Manual optional)      │              │
+       │                 │              │              │
+       └─────────────────┴──────────────┘              │
+                 │                                     │
+                 ▼                                     ▼
+         Story moves to PUBLISHED section        (Dashboard updates)
+         Now appears in /illustrated gallery
+
+
+FLOWCHART 6: DATABASE STATE TRANSITIONS
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────┐
+│ LIES TABLE - Story Lifecycle                                    │
+└─────────────────────────────────────────────────────────────────┘
+
+STATE 1: FRESH SUBMISSION
+┌─────────────────────────────────────┐
+│ id: uuid                            │
+│ content_id, content_en: text        │
+│ resonate_count: 0                   │
+│ doubt_count: 0                      │
+│ illustrated: FALSE                  │
+│ illustration_url: NULL              │
+│ illustration_created_at: NULL       │
+│ created_at: now()                   │
+└─────────────────────────────────────┘
+       │
+       ▼
+STATE 2: GATHERING RESONANCE
+┌─────────────────────────────────────┐
+│ resonate_count: 1-24                │
+│ (Users clicking I FEEL IT)          │
+│ All other fields unchanged          │
+└─────────────────────────────────────┘
+       │
+       ▼
+STATE 3: THRESHOLD REACHED
+┌─────────────────────────────────────┐
+│ resonate_count: ≥ 25                │
+│ (Ready for illustration)            │
+│ illustrated: FALSE (still)          │
+│ (Awaiting creator action)           │
+└─────────────────────────────────────┘
+       │
+       ▼
+STATE 4: ILLUSTRATED
+┌─────────────────────────────────────┐
+│ illustrated: TRUE                   │
+│ illustration_url: "url/path.jpg"    │
+│ illustration_created_at: now()      │
+│ (Now visible in /illustrated)       │
+│ resonate_count continues to grow    │
+└─────────────────────────────────────┘
+       │
+       ▼
+STATE 5: VIRAL PHASE (optional)
+┌─────────────────────────────────────┐
+│ resonate_count: 100+ (high)         │
+│ total_shares: 50+ (reposted)        │
+│ instagram_shares: tracked           │
+│ (Community amplifies story)         │
+└─────────────────────────────────────┘
+
+
+================================================================================
+                            END OF FLOWCHARTS
+================================================================================

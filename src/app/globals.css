@@ -60,26 +60,7 @@ html {
   background: var(--gray-300);
 }
 
-/* Doubt button pulse animation */
-@keyframes doubt-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(252, 118, 106, 0); }
-  50% { box-shadow: 0 0 0 12px rgba(252, 118, 106, 0.15); }
-}
 
-.doubt-btn:hover {
-  animation: doubt-pulse 1.2s ease-in-out infinite;
-}
-
-/* Destroyed text overlay animation */
-@keyframes destroyed-shake {
-  0%, 100% { transform: rotate(-10deg) scale(1); }
-  25% { transform: rotate(-12deg) scale(1.02); }
-  75% { transform: rotate(-8deg) scale(0.98); }
-}
-
-.destroyed-notice {
-  animation: destroyed-shake 3s ease-in-out infinite;
-}
 
 /* Textarea caret color */
 textarea {
@@ -93,31 +74,5 @@ textarea {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Sprint 2: Redaction Effect */
-.redacted-word {
-  background-color: var(--foreground);
-  color: var(--foreground);
-  border-radius: 2px;
-  user-select: none;
-}
-.redacted-word::selection {
-  background: var(--foreground);
-  color: var(--foreground);
-}
-
-/* Sprint 2: Blur Effect */
-.blurred-word {
-  filter: blur(4px);
-  opacity: 0.6;
-  user-select: none;
-}
-
-/* Sprint 2: Burn / Fade Effect */
-.burn-fade {
-  transition: opacity 2s ease-in-out, filter 2s ease-in-out;
-  opacity: 0;
-  filter: grayscale(100%) blur(8px);
 }
 

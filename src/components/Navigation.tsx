@@ -38,11 +38,25 @@ export default function Navigation() {
             {t('navHome')}
           </Link>
           <Link 
+            href={`/${locale}/illustrated`} 
+            className="text-[11px] uppercase tracking-[0.2em] transition-colors hover:text-[var(--color-living-coral)]"
+            style={{ color: 'var(--gray-500)' }}
+          >
+            {t('navGallery')}
+          </Link>
+          <Link 
             href={`/${locale}/write`} 
             className="text-[11px] uppercase tracking-[0.2em] transition-colors hover:text-[var(--color-living-coral)]"
             style={{ color: 'var(--gray-500)' }}
           >
             {t('navWrite')}
+          </Link>
+          <Link 
+            href={`/${locale}/admin/dashboard`} 
+            className="text-[11px] uppercase tracking-[0.2em] transition-colors hover:text-[var(--color-living-coral)] font-bold"
+            style={{ color: 'var(--color-living-coral)' }}
+          >
+            {t('navAdmin')}
           </Link>
           <div className="flex gap-3 ml-4 pl-6 border-l" style={{ borderColor: 'var(--gray-200)' }}>
             <button 
@@ -111,12 +125,28 @@ export default function Navigation() {
             {t('navHome')}
           </Link>
           <Link 
+            href={`/${locale}/illustrated`} 
+            onClick={() => setMenuOpen(false)}
+            className="text-xs uppercase tracking-[0.3em] transition-colors hover:text-[var(--color-living-coral)]"
+            style={{ color: 'var(--gray-500)' }}
+          >
+            {t('navGallery')}
+          </Link>
+          <Link 
             href={`/${locale}/write`} 
             onClick={() => setMenuOpen(false)}
             className="text-xs uppercase tracking-[0.3em] transition-colors hover:text-[var(--color-living-coral)]"
             style={{ color: 'var(--gray-500)' }}
           >
             {t('navWrite')}
+          </Link>
+          <Link 
+            href={`/${locale}/admin/dashboard`} 
+            onClick={() => setMenuOpen(false)}
+            className="text-xs uppercase tracking-[0.3em] transition-colors hover:text-[var(--color-living-coral)] font-bold"
+            style={{ color: 'var(--color-living-coral)' }}
+          >
+            {t('navAdmin')}
           </Link>
           <div className="flex gap-4">
             <button 

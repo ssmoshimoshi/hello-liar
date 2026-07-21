@@ -41,3 +41,34 @@ export async function addDoubt(id: string) {
   revalidatePath('/', 'layout');
   return { success: true };
 }
+
+export async function addResonate(id: string) {
+  // Atomic increment via Supabase RPC
+  const { error } = await supabase.rpc('increment_resonate', { lie_id: id });
+
+  if (error) {
+    console.error("Error incrementing resonate:", error);
+    return { error: "Failed to update resonate" };
+  }
+
+  revalidatePath('/', 'layout');
+  revalidatePath(`/read/${id}`, 'page');
+  return { success: true };
+}
+
+export async function markIllustrated(id: string, imageUrl: string) {
+  const { error } = await supabase.rpc('mark_illustrated', { 
+    lie_id: id,
+    img_url: imageUrl
+  });
+
+  if (error) {
+    console.error("Error marking illustrated:", error);
+    return { error: "Failed to mark as illustrated" };
+  }
+
+  revalidatePath('/', 'layout');
+  revalidatePath(`/read/${id}`, 'page');
+  revalidatePath('/illustrated', 'page');
+  return { success: true };
+}
