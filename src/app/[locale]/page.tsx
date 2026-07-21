@@ -78,6 +78,30 @@ export default async function Home({
         </details>
       </div>
 
+      {/* Hero / Tagline Section (First Snap Item) */}
+      <section className="snap-center w-full h-[100dvh] flex flex-col justify-center items-center px-6 md:px-12 relative text-center">
+        <p 
+          className="text-[11px] uppercase tracking-[0.3em] font-mono mb-8"
+          style={{ color: 'var(--gray-400)' }}
+        >
+          {locale === 'en' ? 'Anonymous Confessions' : 'Pengakuan Anonim'}
+        </p>
+        <h1 className="text-[2.5rem] leading-[1.1] md:text-6xl lg:text-7xl font-[var(--font-playfair)] font-black tracking-tight max-w-3xl break-words hyphens-auto">
+          {locale === 'en' 
+            ? 'Everyone lies. Some just write it down.' 
+            : 'Semua orang berbohong. Beberapa menuliskannya.'
+          }
+        </h1>
+        <div className="editorial-rule mt-10 mx-auto" />
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 animate-bounce opacity-50">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </section>
+
       {/* Stories Feed */}
       <div className="w-full flex flex-col">
           {displayLies.map((lie) => {
