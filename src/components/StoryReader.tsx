@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { addDoubt } from '@/lib/actions';
 import { useTranslations } from 'next-intl';
-import type { Lie } from '@/lib/mock-db';
+import { Tables } from '@/types/database';
+
+export type Lie = Tables<'lies'>;
 
 interface Props {
   initialLie: Lie;
@@ -15,10 +17,21 @@ export default function StoryReader({ initialLie, locale }: Props) {
   const [doubtCount, setDoubtCount] = useState(initialLie.doubt_count);
   const [isClient, setIsClient] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [hasDoubted, setHasDoubted] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    // Check if user already doubted this lie
+    try {
+      const doubtedLies = JSON.parse(localStorage.getItem('doubted_lies') || '[]');
+      if (doubtedLies.includes(initialLie.id)) {
+        setHasDoubted(true);
+      }
+    } catch (e) {
+      console.error('Error reading localStorage', e);
+    }
+  }, [initialLie.id]);
 
   const content = locale === 'en' ? initialLie.content_en : initialLie.content_id;
   const words = useMemo(() => content.split(' '), [content]);
@@ -34,11 +47,34 @@ export default function StoryReader({ initialLie, locale }: Props) {
   }, [words]);
 
   const handleDoubt = async () => {
-    if (isPending) return;
+    if (isPending || isCooldown || hasDoubted) return;
     setIsPending(true);
+    setIsCooldown(true);
+    
+    // Optimistic UI update
     setDoubtCount(prev => prev + 1);
-    await addDoubt(initialLie.id);
-    setIsPending(false);
+    setHasDoubted(true);
+    
+    // Save to localStorage
+    try {
+      const doubtedLies = JSON.parse(localStorage.getItem('doubted_lies') || '[]');
+      if (!doubtedLies.includes(initialLie.id)) {
+        doubtedLies.push(initialLie.id);
+        localStorage.setItem('doubted_lies', JSON.stringify(doubtedLies));
+      }
+    } catch (e) {
+      console.error('Error saving to localStorage', e);
+    }
+    
+    // API call doesn't block the cooldown timer
+    addDoubt(initialLie.id).finally(() => {
+      setIsPending(false);
+    });
+
+    // Enforce 1-second cooldown between clicks
+    setTimeout(() => {
+      setIsCooldown(false);
+    }, 1000);
   };
 
   const getStage = (clicks: number) => {
@@ -127,32 +163,38 @@ export default function StoryReader({ initialLie, locale }: Props) {
             )}
 
             {/* Story text */}
-            <div className="text-xl md:text-3xl leading-relaxed md:leading-[1.6] font-serif">
+            <div className={`text-xl md:text-3xl leading-relaxed md:leading-[1.6] font-serif transition-all duration-1000 ${stage === 4 ? 'burn-fade' : ''}`}>
               {words.map((word, i) => {
                 const rand = randomOffsets[i];
                 
-                let style: React.CSSProperties = {};
                 let className = "inline-block mr-[0.25em] transition-all duration-700 ease-in-out ";
                 
                 if (stage === 1) {
-                  // Perfect editorial layout — no manipulation
+                  // Perfect editorial layout
                 } else if (stage === 2) {
-                  style.marginLeft = `${Math.abs(rand.x / 3)}px`;
-                  style.marginTop = `${Math.abs(rand.y / 8)}px`;
+                  // 15% of words get redacted based on their random x value
+                  if (Math.abs(rand.x) > 40) {
+                    className += "redacted-word ";
+                  }
                 } else if (stage === 3) {
-                  style.marginLeft = `${rand.x / 2}px`;
-                  style.letterSpacing = `${rand.letterSpacing}px`;
-                  style.transform = `rotate(${rand.rotate}deg)`;
-                  style.display = 'inline-block';
+                  // 40% words redacted, the rest blurred based on random values
+                  if (Math.abs(rand.x) > 20) {
+                    className += "redacted-word ";
+                  } else {
+                    className += "blurred-word ";
+                  }
                 } else if (stage === 4) {
-                  style.position = 'relative';
-                  style.transform = `translate(${rand.x}px, ${rand.y}px) rotate(${rand.rotate * 2}deg)`;
-                  style.opacity = 0.15 + Math.abs(Math.sin(i)) * 0.35;
-                  style.letterSpacing = `${rand.letterSpacing * 2}px`;
+                  // Text is burning away via parent's burn-fade class
+                  // We still keep the heavy redaction
+                  if (Math.abs(rand.x) > 10) {
+                    className += "redacted-word ";
+                  } else {
+                    className += "blurred-word ";
+                  }
                 }
 
                 return (
-                  <span key={i} className={className} style={style}>
+                  <span key={i} className={className}>
                     {word}
                   </span>
                 );
@@ -165,11 +207,14 @@ export default function StoryReader({ initialLie, locale }: Props) {
             <div className="mt-16 md:mt-20 sticky bottom-4 md:bottom-8 z-20">
               <button
                 onClick={handleDoubt}
-                disabled={isPending}
+                disabled={isPending || isCooldown || hasDoubted}
                 className="doubt-btn w-full py-5 md:py-7 border-2 border-foreground text-foreground font-sans font-bold uppercase tracking-[0.2em] text-sm md:text-base transition-all duration-300 hover:bg-[var(--color-living-coral)] hover:text-white hover:border-[var(--color-living-coral)] active:scale-[0.98] disabled:opacity-50"
                 style={{ background: 'var(--background)' }}
               >
-                {t('doubtBtn')}
+                {hasDoubted 
+                  ? (locale === 'en' ? 'DOUBTED' : 'DIRAGUKAN')
+                  : t('doubtBtn')
+                }
                 <span 
                   className="ml-3 text-[11px] font-normal"
                   style={{ color: 'var(--gray-400)' }}

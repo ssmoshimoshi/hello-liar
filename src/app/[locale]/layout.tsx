@@ -15,10 +15,43 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "Hello Liar — Anonymous Interactive Platform",
-  description: "Write your lies. Let the world doubt them.",
-};
+import { Metadata } from 'next';
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  
+  const title = locale === 'id' ? "Hello Liar — Platform Interaktif Anonim" : "Hello Liar — Anonymous Interactive Platform";
+  const description = locale === 'id' ? "Tulis kebohonganmu. Biarkan dunia meragukannya." : "Write your lies. Let the world doubt them.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: 'https://hello-liar.vercel.app',
+      siteName: 'Hello Liar',
+      images: [
+        {
+          url: '/og-image.png', // Fallback local image if you add one later
+          width: 1200,
+          height: 630,
+          alt: 'Hello Liar',
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

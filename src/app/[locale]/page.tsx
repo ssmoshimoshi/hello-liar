@@ -1,4 +1,4 @@
-import { getLies } from '@/lib/mock-db';
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
 export default async function Home({
@@ -7,7 +7,13 @@ export default async function Home({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const lies = await getLies();
+  
+  const { data: lies } = await supabase
+    .from('lies')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  const displayLies = lies || [];
 
   return (
     <div className="max-w-4xl mx-auto px-6 md:px-12">
@@ -31,7 +37,7 @@ export default async function Home({
       {/* Stories Feed */}
       <section className="py-16 md:py-24">
         <div className="space-y-0">
-          {lies.map((lie, index) => {
+          {displayLies.map((lie, index) => {
             const content = locale === 'en' ? lie.content_en : lie.content_id;
             const isDestroyed = lie.doubt_count > 50;
 
@@ -85,11 +91,17 @@ export default async function Home({
             );
           })}
 
-          {lies.length === 0 && (
+          {displayLies.length === 0 && (
             <div className="py-32 text-center">
-              <p className="font-sans tracking-[0.3em] uppercase text-[11px]" style={{ color: 'var(--gray-400)' }}>
+              <p className="font-sans tracking-[0.3em] uppercase text-[11px] mb-8" style={{ color: 'var(--gray-400)' }}>
                 {locale === 'en' ? 'No lies yet. Be the first.' : 'Belum ada kebohongan. Jadilah yang pertama.'}
               </p>
+              <Link 
+                href={`/${locale}/write`}
+                className="inline-block py-4 px-8 border-2 border-foreground font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all hover:bg-foreground hover:text-background"
+              >
+                {locale === 'en' ? 'Confess' : 'Buat Pengakuan'}
+              </Link>
             </div>
           )}
         </div>

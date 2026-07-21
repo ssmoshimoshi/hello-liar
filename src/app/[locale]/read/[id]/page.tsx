@@ -1,4 +1,4 @@
-import { getLieById } from '@/lib/mock-db';
+import { supabase } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 import StoryReader from '@/components/StoryReader';
 
@@ -8,7 +8,12 @@ export default async function ReadPage({
   params: Promise<{ id: string; locale: string }>;
 }) {
   const { id, locale } = await params;
-  const lie = await getLieById(id);
+  
+  const { data: lie } = await supabase
+    .from('lies')
+    .select('*')
+    .eq('id', id)
+    .single();
 
   if (!lie) {
     notFound();

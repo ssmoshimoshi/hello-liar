@@ -14,6 +14,7 @@ export default function WritePage() {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [charCount, setCharCount] = useState(0);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -22,18 +23,25 @@ export default function WritePage() {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
     setCharCount(e.target.value.length);
+    if (errorMsg) setErrorMsg(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
     
+    if (content.length < 10) {
+      setErrorMsg(locale === 'en' ? 'Confession is too short (min 10 chars).' : 'Cerita terlalu pendek (min 10 karakter).');
+      return;
+    }
+
     setIsSubmitting(true);
     const res = await submitLie(content, content);
     
     if (res.success) {
       router.push(`/${locale}`);
     } else {
+      setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
     }
   };
@@ -52,6 +60,11 @@ export default function WritePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
+        {errorMsg && (
+          <div className="mb-8 p-4 border border-[var(--color-living-coral)] text-[var(--color-living-coral)] text-sm font-sans tracking-wide">
+            {errorMsg}
+          </div>
+        )}
         <textarea
           ref={textareaRef}
           value={content}
@@ -61,7 +74,8 @@ export default function WritePage() {
           style={{ 
             /* Placeholder via CSS variable doesn't work inline, handled by Tailwind */
           }}
-          maxLength={1000}
+          minLength={10}
+          maxLength={500}
           required
         />
         
@@ -74,7 +88,7 @@ export default function WritePage() {
             className="text-[11px] font-sans tracking-[0.2em] tabular-nums"
             style={{ color: 'var(--gray-400)' }}
           >
-            {charCount} / 1000
+            {charCount} / 500
           </span>
           <button 
             type="submit" 

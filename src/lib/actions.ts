@@ -1,19 +1,43 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addLie, incrementDoubt } from './mock-db';
+import { supabase } from './supabase';
 
 export async function submitLie(content_id: string, content_en: string) {
   if (!content_id || !content_en) return { error: "Content is required" };
   
-  const lie = await addLie(content_id, content_en);
-  revalidatePath('/');
-  return { success: true, id: lie.id };
+  // Validation: length check
+  if (content_id.length < 10 || content_en.length < 10) return { error: "Content must be at least 10 characters long" };
+  if (content_id.length > 500 || content_en.length > 500) return { error: "Content must be less than 500 characters long" };
+
+  // Sanitization: strip basic HTML tags
+  const sanitizedId = content_id.replace(/<[^>]*>?/gm, '');
+  const sanitizedEn = content_en.replace(/<[^>]*>?/gm, '');
+
+  const { data, error } = await supabase
+    .from('lies')
+    .insert([{ content_id: sanitizedId, content_en: sanitizedEn }])
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    console.error("Error inserting lie:", error);
+    return { error: "Failed to submit lie" };
+  }
+
+  revalidatePath('/', 'layout');
+  return { success: true, id: data.id };
 }
 
 export async function addDoubt(id: string) {
-  const newCount = await incrementDoubt(id);
-  revalidatePath(`/read/${id}`);
-  revalidatePath('/');
-  return { success: true, count: newCount };
+  // Atomic increment via Supabase RPC
+  const { error } = await supabase.rpc('increment_doubt', { lie_id: id });
+
+  if (error) {
+    console.error("Error incrementing doubt:", error);
+    return { error: "Failed to update doubt" };
+  }
+
+  revalidatePath('/', 'layout');
+  return { success: true };
 }
