@@ -17,6 +17,15 @@
   --color-living-coral: #FC766A;
   --font-serif: var(--font-playfair);
   --font-sans: var(--font-inter);
+  --font-discipline: "Discipline Notes", cursive;
+}
+
+@font-face {
+  font-family: 'Discipline Notes';
+  src: url('/fonts/DisciplineNotes.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 @media (prefers-color-scheme: dark) {
