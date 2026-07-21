@@ -107,8 +107,7 @@ export default async function Home({
             return (
               <article 
                 key={lie.id} 
-                className="group border-b py-12 md:py-16 transition-colors"
-                style={{ borderColor: 'var(--gray-100)' }}
+                className="group py-20 md:py-40 transition-colors flex flex-col justify-center min-h-[50vh]"
               >
                 <Link href={`/${locale}/read/${lie.id}`} className="block">
                   {/* Top Meta Row */}

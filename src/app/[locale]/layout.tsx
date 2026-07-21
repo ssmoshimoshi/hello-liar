@@ -3,7 +3,7 @@ import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
+import FloatingNav from '@/components/FloatingNav';
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -73,9 +73,9 @@ export default async function RootLayout({
       lang={locale}
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-serif bg-background text-foreground">
+      <body suppressHydrationWarning className="min-h-full flex flex-col font-serif bg-background text-foreground relative pb-24 md:pb-0">
         <NextIntlClientProvider messages={messages}>
-          <Navigation />
+          <FloatingNav />
           <main className="flex-grow flex flex-col">
             {children}
           </main>

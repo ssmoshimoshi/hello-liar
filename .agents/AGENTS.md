@@ -20,6 +20,7 @@
 2. Only run `npm run build` when user asks to verify or deploy.
 3. Don't install packages without stating why first.
 4. Don't create files that weren't part of the requested task.
+5. **MANDATORY PRE-CODING UX AUDIT**: Before writing or modifying any UI code, you MUST activate the `ux_audit` skill and evaluate the plan/feature from a layperson's perspective (Nielsen's Heuristics). NEVER skip this brainstorming/auditing phase.
 
 ## Project Context
 - This is "Hello Liar" — an anonymous interactive storytelling platform.
@@ -27,3 +28,13 @@
 - Color: Black, White, Gray + Living Coral (#FC766AFF) accent only.
 - Fonts: Playfair Display (stories), Inter (UI).
 - Languages: Indonesian (default) and English.
+
+## Modern UI/UX Expertise & Design Guidelines
+*(Derived from Shadcn, Radix, Mantine, Vercel Design, and Awesome Design Systems)*
+When asked to design or brainstorm UI/UX, apply these principles:
+1. **Accessibility First (Radix/Shadcn)**: Always consider keyboard navigation, ARIA labels, and screen readers. UI must be usable by everyone.
+2. **Component Ownership**: Prefer building custom, copy-pasteable Tailwind components over heavy external UI libraries. Full control over markup and styles.
+3. **Cathartic Minimalism (Vercel/Modern)**: Use massive negative space, high contrast, and subtle micro-interactions (e.g., breathing pulses, ripple effects, smooth transitions). Form follows emotion.
+4. **Ergonomic Layouts**: Design for thumbs on mobile (bottom navigation pills) and distraction-free reading on desktop.
+5. **Thematic Consistency (Mantine)**: Strict adherence to the color palette (Black, White, Gray, Living Coral). Ensure seamless dark/light mode compatibility if requested.
+6. **Psychological UX**: Interactions should match the emotional weight of the action. (e.g., "Doubt" feels heavy/requires a hold, "Resonate" feels light/rewarding).
