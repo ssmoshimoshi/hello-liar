@@ -204,7 +204,7 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
     >
       {/* Author ID at the top */}
       <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60">
-        <span className="font-discipline text-sm tracking-widest">
+        <span className="font-mono text-xs tracking-[0.3em]">
           Nᵒ {lie.id.slice(0, 8)}
         </span>
       </div>
@@ -217,16 +217,16 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          <span>&lt; Doubt</span>
-          <span>Resonate &gt;</span>
+          <span>&lt; Empty</span>
+          <span>Echoes &gt;</span>
         </motion.div>
       )}
 
       {/* Core Content with X Strikethrough overlaid */}
       <div className="relative">
-        <p className={`font-[var(--font-serif-light)] font-light text-center leading-relaxed relative z-0 ${
-          content.length < 50 ? 'text-4xl md:text-5xl' : 
-          content.length < 150 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'
+        <p className={`font-[var(--font-special-elite)] text-center leading-relaxed relative z-0 ${
+          content.length < 50 ? 'text-2xl md:text-3xl' : 
+          content.length < 150 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl'
         }`}>
           &ldquo;{content}&rdquo;
         </p>

@@ -1,13 +1,19 @@
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Libre_Baskerville, Special_Elite, Inter } from "next/font/google";
 import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import FloatingNav from '@/components/FloatingNav';
 
-const cormorant = Cormorant_Garamond({
-  weight: ['300', '400', '500', '600', '700'],
-  variable: "--font-serif-light",
+const baskerville = Libre_Baskerville({
+  weight: ['400', '700'],
+  variable: "--font-baskerville",
+  subsets: ["latin"],
+});
+
+const specialElite = Special_Elite({
+  weight: ['400'],
+  variable: "--font-special-elite",
   subsets: ["latin"],
 });
 
@@ -72,7 +78,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${cormorant.variable} ${inter.variable} h-full antialiased`}
+      className={`${baskerville.variable} ${specialElite.variable} ${inter.variable} h-full antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col font-serif bg-background text-foreground relative pb-32 md:pb-0">
         <NextIntlClientProvider messages={messages}>
