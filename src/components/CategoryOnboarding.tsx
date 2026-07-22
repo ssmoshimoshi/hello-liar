@@ -78,7 +78,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
                 onClick={() => toggleCategory(cat)}
                 className={`px-4 py-2 border rounded-full text-xs font-mono uppercase tracking-widest transition-all duration-300 ${
                   selected.includes(cat) 
-                    ? 'border-primary bg-primary text-background' 
+                    ? 'border-[var(--color-living-coral)] bg-[var(--color-living-coral)] text-white' 
                     : 'border-white/20 text-gray-400 hover:border-white/50 hover:text-white'
                 }`}
               >
@@ -87,19 +87,19 @@ export default function CategoryOnboarding({ onComplete }: Props) {
             ))}
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: selected.length > 0 ? 1 : 0 }}
-            className="flex justify-center"
-          >
-            <button 
-              onClick={handleProceed}
-              disabled={selected.length === 0}
-              className="px-8 py-3 bg-white text-background font-mono text-sm uppercase tracking-widest font-bold hover:bg-gray-200 transition-colors disabled:opacity-50"
-            >
-              Masuk
-            </button>
-          </motion.div>
+          {/* Conditional rendering for the button */}
+          <div className="flex justify-center h-16">
+            {selected.length > 0 && (
+              <motion.button 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={handleProceed}
+                className="px-8 py-3 bg-white text-black font-mono text-sm uppercase tracking-widest font-bold hover:bg-gray-200 transition-colors"
+              >
+                Masuk
+              </motion.button>
+            )}
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>
