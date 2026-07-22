@@ -20,6 +20,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
 
   useEffect(() => {
     setIsClient(true);
+    /* TEMPORARY: Disabled for testing so it always shows on refresh
     const saved = localStorage.getItem('hl_categories');
     if (saved) {
       try {
@@ -30,6 +31,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
         }
       } catch (e) {}
     }
+    */
     setHasCompleted(false);
   }, [onComplete]);
 
