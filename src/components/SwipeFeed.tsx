@@ -132,18 +132,18 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
   const scale = 1; // No scale down for cards underneath
   const yOffset = 0; // No y-offset for cards underneath
 
-  // Background color blends (White -> Left: Black, Right: Transparent/Glass)
+  // Background color blends (White -> Left: Black, Right: Living Coral with opacity)
   const backgroundColor = useTransform(
     x,
     [-150, 0, 150],
-    ['rgba(0,0,0,0.9)', 'rgba(255,255,255,1)', 'rgba(255,255,255,0.1)']
+    ['rgba(0,0,0,0.9)', 'rgba(255,255,255,1)', 'rgba(252,118,106,0.9)']
   );
   
   // Text color blends
   const textColor = useTransform(
     x,
     [-150, 0, 150],
-    ['rgba(255,255,255,1)', 'rgba(0,0,0,1)', 'rgba(0,0,0,1)']
+    ['rgba(255,255,255,1)', 'rgba(0,0,0,1)', 'rgba(255,255,255,1)']
   );
 
   const borderColor = useTransform(
