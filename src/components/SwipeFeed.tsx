@@ -167,6 +167,10 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
 
   const content = (lie as any).content_id || lie.content_en;
 
+  useEffect(() => {
+    controls.start({ opacity: 1, scale, transition: { duration: 0.3 } });
+  }, [controls, scale]);
+
   return (
     <motion.div
       className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-12 border rounded-2xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing backdrop-blur-md"
@@ -185,8 +189,6 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
       onDragEnd={handleDragEnd}
       animate={controls}
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale }}
-      transition={{ duration: 0.3 }}
     >
       {/* Doubt Effect: Strikethrough */}
       <motion.div 
