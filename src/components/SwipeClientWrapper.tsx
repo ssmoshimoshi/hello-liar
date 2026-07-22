@@ -16,23 +16,21 @@ export default function SwipeClientWrapper() {
   return (
     <div className="w-full h-[100dvh] bg-background relative overflow-hidden flex flex-col">
       <CategoryOnboarding onComplete={handleOnboardingComplete} />
-      
+      {/* Minimalist Header Tagline */}
+      {onboardingComplete && (
+        <div className="absolute top-0 left-0 w-full p-6 flex justify-center z-20 pointer-events-none">
+          <p className="text-[10px] md:text-xs font-mono uppercase tracking-[0.3em] text-[var(--gray-400)]">
+            Everyone lies. Some write it down.
+          </p>
+        </div>
+      )}
+
       {/* Only show the feed if onboarding is complete so it doesn't fetch prematurely */}
       {onboardingComplete && (
         <div className="flex-1 flex flex-col justify-center items-center px-4 w-full h-full relative z-10">
           <SwipeFeed selectedCategories={selectedCategories} />
         </div>
       )}
-
-      {/* Decorative background typography to retain the brutalist aesthetic */}
-      <div className="absolute inset-0 pointer-events-none opacity-5 flex flex-col items-center justify-center overflow-hidden z-0">
-        <h1 className="text-[15vw] font-discipline tracking-tighter whitespace-nowrap leading-none select-none">
-          EVERYONE LIES
-        </h1>
-        <h1 className="text-[15vw] font-discipline tracking-tighter whitespace-nowrap leading-none select-none">
-          SOME WRITE IT DOWN
-        </h1>
-      </div>
     </div>
   );
 }

@@ -127,22 +127,29 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
   const x = useMotionValue(0);
   const controls = useAnimation();
   
-  // Visual feedback mappings based on swipe distance
+  // Hide stack visually (Single Card Illusion)
   const rotate = useTransform(x, [-200, 200], [-10, 10]);
-  const scale = isTop ? 1 : 1 - (total - 1 - index) * 0.05;
-  const yOffset = isTop ? 0 : (total - 1 - index) * 20;
+  const scale = 1; // No scale down for cards underneath
+  const yOffset = 0; // No y-offset for cards underneath
 
-  // Background color blends (Neutral -> Left(Doubt/Black) | Right(Resonate/Coral))
+  // Background color blends (Solid colors only)
   const backgroundColor = useTransform(
     x,
     [-150, 0, 150],
-    ['rgba(0,0,0,0.9)', 'rgba(255,255,255,0.02)', 'rgba(252,118,106,0.3)']
+    ['var(--background)', 'var(--foreground)', 'var(--color-living-coral)']
+  );
+  
+  // Text color blends to maintain contrast
+  const textColor = useTransform(
+    x,
+    [-150, 0, 150],
+    ['var(--gray-500)', 'var(--background)', 'white']
   );
 
   const borderColor = useTransform(
     x,
     [-150, 0, 150],
-    ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)', 'rgba(252,118,106,0.8)']
+    ['var(--gray-200)', 'transparent', 'transparent']
   );
 
   // Strikethrough for doubt (left)
@@ -168,12 +175,12 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
   const content = (lie as any).content_id || lie.content_en;
 
   useEffect(() => {
-    controls.start({ opacity: 1, scale, transition: { duration: 0.3 } });
-  }, [controls, scale]);
+    controls.start({ opacity: 1, scale: 1, transition: { duration: 0.3 } });
+  }, [controls]);
 
   return (
     <motion.div
-      className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-12 border rounded-2xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing backdrop-blur-md"
+      className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-12 rounded-none overflow-hidden cursor-grab active:cursor-grabbing border"
       style={{
         x,
         rotate,
@@ -181,33 +188,35 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         y: yOffset,
         zIndex: index,
         backgroundColor,
-        borderColor
+        borderColor,
+        color: textColor
       }}
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.9}
       onDragEnd={handleDragEnd}
       animate={controls}
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0, scale: 0.95 }}
     >
+      {/* Author ID at the top */}
+      <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-50">
+        <span className="text-[10px] font-mono uppercase tracking-[0.4em]">
+          Nᵒ {lie.id.slice(0, 8)}
+        </span>
+      </div>
+
       {/* Doubt Effect: Strikethrough */}
       <motion.div 
-        className="absolute w-[120%] h-2 bg-foreground rotate-[-5deg] z-10"
+        className="absolute w-[120%] h-2 bg-current rotate-[-5deg] z-10"
         style={{ opacity: strikeOpacity }}
       />
-      <motion.span 
-        className="absolute top-8 left-8 text-xs font-mono tracking-widest uppercase opacity-50"
-        style={{ opacity: strikeOpacity }}
-      >
-        Doubted
-      </motion.span>
 
       {/* Resonate Effect: Stamp */}
       <motion.div 
         className="absolute z-10 pointer-events-none"
         style={{ opacity: stampOpacity, scale: stampScale }}
       >
-        <div className="border-4 border-primary text-primary px-6 py-2 text-3xl font-black font-mono tracking-widest uppercase rotate-[15deg]">
+        <div className="border-4 border-current px-6 py-2 text-3xl font-black font-mono tracking-widest uppercase rotate-[15deg]">
           RESONATED
         </div>
       </motion.div>
@@ -215,7 +224,7 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
       {/* Tutorial Hint */}
       {isFirstCard && (
         <motion.div 
-          className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase text-gray-500 pointer-events-none"
+          className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
@@ -226,9 +235,9 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
       )}
 
       {/* Core Content */}
-      <p className={`font-discipline text-center leading-relaxed text-[var(--foreground)] relative z-0 ${
+      <p className={`font-[var(--font-playfair)] text-center leading-relaxed relative z-0 ${
         content.length < 50 ? 'text-4xl md:text-5xl' : 
-        content.length < 150 ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'
+        content.length < 150 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'
       }`}>
         &ldquo;{content}&rdquo;
       </p>
