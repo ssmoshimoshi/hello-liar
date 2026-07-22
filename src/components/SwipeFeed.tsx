@@ -132,32 +132,36 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
   const scale = 1; // No scale down for cards underneath
   const yOffset = 0; // No y-offset for cards underneath
 
-  // Background color blends (Solid colors only)
+  // Background color blends (White -> Left: Black, Right: Transparent/Glass)
   const backgroundColor = useTransform(
     x,
     [-150, 0, 150],
-    ['var(--background)', 'var(--foreground)', 'var(--color-living-coral)']
+    ['rgba(0,0,0,0.9)', 'rgba(255,255,255,1)', 'rgba(255,255,255,0.1)']
   );
   
-  // Text color blends to maintain contrast
+  // Text color blends
   const textColor = useTransform(
     x,
     [-150, 0, 150],
-    ['var(--gray-500)', 'var(--background)', 'white']
+    ['rgba(255,255,255,1)', 'rgba(0,0,0,1)', 'rgba(0,0,0,1)']
   );
 
   const borderColor = useTransform(
     x,
     [-150, 0, 150],
-    ['var(--gray-200)', 'transparent', 'transparent']
+    ['rgba(255,255,255,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)']
   );
+
+  // Blur effect for both sides
+  const blurValue = useTransform(x, [-150, 0, 150], [8, 0, 8]);
+  // Note: Framer motion style object doesn't support backdropFilter directly via useTransform well without a custom template, 
+  // but we can apply it via a template function or just rely on a persistent backdrop-blur class and let opacity of background color do the work.
 
   // Strikethrough for doubt (left)
   const strikeOpacity = useTransform(x, [0, -100], [0, 1]);
   
-  // Stamp for resonate (right)
-  const stampOpacity = useTransform(x, [0, 100], [0, 1]);
-  const stampScale = useTransform(x, [0, 150], [2, 1]);
+  // "this is me" for resonate (right)
+  const resonateOpacity = useTransform(x, [0, 100], [0, 1]);
 
   const handleDragEnd = async (e: any, info: PanInfo) => {
     const threshold = 100;
@@ -180,7 +184,7 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
 
   return (
     <motion.div
-      className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-12 rounded-none overflow-hidden cursor-grab active:cursor-grabbing border"
+      className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border backdrop-blur-md"
       style={{
         x,
         rotate,
@@ -205,22 +209,6 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         </span>
       </div>
 
-      {/* Doubt Effect: Strikethrough */}
-      <motion.div 
-        className="absolute w-[120%] h-2 bg-current rotate-[-5deg] z-10"
-        style={{ opacity: strikeOpacity }}
-      />
-
-      {/* Resonate Effect: Stamp */}
-      <motion.div 
-        className="absolute z-10 pointer-events-none"
-        style={{ opacity: stampOpacity, scale: stampScale }}
-      >
-        <div className="border-4 border-current px-6 py-2 text-3xl font-black font-mono tracking-widest uppercase rotate-[15deg]">
-          RESONATED
-        </div>
-      </motion.div>
-
       {/* Tutorial Hint */}
       {isFirstCard && (
         <motion.div 
@@ -234,13 +222,34 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         </motion.div>
       )}
 
-      {/* Core Content */}
-      <p className={`font-[var(--font-playfair)] text-center leading-relaxed relative z-0 ${
-        content.length < 50 ? 'text-4xl md:text-5xl' : 
-        content.length < 150 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'
-      }`}>
-        &ldquo;{content}&rdquo;
-      </p>
+      {/* Core Content with X Strikethrough overlaid */}
+      <div className="relative">
+        <p className={`font-[var(--font-playfair)] text-center leading-relaxed relative z-0 ${
+          content.length < 50 ? 'text-4xl md:text-5xl' : 
+          content.length < 150 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'
+        }`}>
+          &ldquo;{content}&rdquo;
+        </p>
+
+        {/* X Strikethrough bounded exactly to the text dimensions */}
+        <motion.div 
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{ opacity: strikeOpacity }}
+        >
+          <svg className="w-full h-full opacity-80" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+          </svg>
+        </motion.div>
+      </div>
+
+      {/* Resonate Effect: "this is me" */}
+      <motion.div 
+        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
+        style={{ opacity: resonateOpacity }}
+      >
+        this is me
+      </motion.div>
 
     </motion.div>
   );
