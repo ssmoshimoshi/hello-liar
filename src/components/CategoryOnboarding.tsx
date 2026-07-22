@@ -76,10 +76,10 @@ export default function CategoryOnboarding({ onComplete }: Props) {
               <button
                 key={cat}
                 onClick={() => toggleCategory(cat)}
-                className={`px-4 py-2 border rounded-full text-xs font-mono uppercase tracking-widest transition-all duration-300 ${
+                className={`px-4 py-2 text-xs font-mono uppercase tracking-widest transition-colors duration-300 ${
                   selected.includes(cat) 
-                    ? 'border-[var(--color-living-coral)] bg-[var(--color-living-coral)] text-white' 
-                    : 'border-white/20 text-gray-400 hover:border-white/50 hover:text-white'
+                    ? 'text-[var(--color-living-coral)] font-bold' 
+                    : 'text-[var(--gray-400)] hover:text-foreground'
                 }`}
               >
                 {cat}
@@ -88,13 +88,13 @@ export default function CategoryOnboarding({ onComplete }: Props) {
           </motion.div>
 
           {/* Conditional rendering for the button */}
-          <div className="flex justify-center h-16">
+          <div className="flex justify-center h-16 mt-8">
             {selected.length > 0 && (
               <motion.button 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={handleProceed}
-                className="px-8 py-3 bg-white text-black font-mono text-sm uppercase tracking-widest font-bold hover:bg-gray-200 transition-colors"
+                className="px-8 py-3 text-foreground font-mono text-sm uppercase tracking-widest font-bold hover:text-[var(--color-living-coral)] transition-colors"
               >
                 Masuk
               </motion.button>
