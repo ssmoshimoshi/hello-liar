@@ -33,7 +33,8 @@ export default function CategoryOnboarding({ onComplete }: Props) {
     }
     */
     setHasCompleted(false);
-  }, [onComplete]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleCategory = (cat: string) => {
     setSelected(prev => 
