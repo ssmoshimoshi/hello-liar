@@ -29,6 +29,13 @@
     "adminPublished": "Published",
     "btnIllustrate": "Illustrate",
     "uploadTitle": "Upload Art",
-    "uploadBtn": "Publish Art"
+    "uploadBtn": "Publish Art",
+    "navVault": "The Vault",
+    "vaultTitle": "Echoes of the Mind",
+    "vaultSubtitle": "This room only exists in your device's memory. Clear your cache, and these lies will truly vanish.",
+    "vaultWritten": "What I Wrote",
+    "vaultResonated": "What I Felt",
+    "vaultEmptyWritten": "You haven't written any lies.",
+    "vaultEmptyResonated": "You haven't felt any lies."
   }
 }

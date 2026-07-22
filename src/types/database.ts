@@ -14,6 +14,8 @@ export interface Database {
           id: string
           content_id: string
           content_en: string
+          author_id: string | null
+          categories: string[] | null
           doubt_count: number
           resonate_count: number
           illustrated: boolean
@@ -28,6 +30,8 @@ export interface Database {
           id?: string
           content_id: string
           content_en: string
+          author_id?: string | null
+          categories?: string[] | null
           doubt_count?: number
           resonate_count?: number
           illustrated?: boolean
@@ -42,6 +46,8 @@ export interface Database {
           id?: string
           content_id?: string
           content_en?: string
+          author_id?: string | null
+          categories?: string[] | null
           doubt_count?: number
           resonate_count?: number
           illustrated?: boolean

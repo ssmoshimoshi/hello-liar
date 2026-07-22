@@ -9,6 +9,7 @@
 6. **BATCH EDITS** — use `multi_replace_file_content` instead of multiple sequential single edits to the same file.
 7. **DON'T SUMMARIZE ARTIFACTS** — after creating/updating an artifact, point to it. Don't re-explain.
 8. **DON'T RE-READ FILES YOU JUST WROTE** — trust your own output.
+9. **ABSOLUTELY NO EMOJIS OR EMOTICONS** — Never use emojis (e.g. rocket, lightbulb, fire) or emoticons in your chat responses or in any generated code/UI elements. Keep the tone strictly professional, dark, and raw to match the project's aesthetic.
 
 ## Brainstorming Modes
 - **`br`** keyword at start = User/UX brainstorming mode. Think as an end-user, focus on experience, feelings, usability. NO CODE. NO FILE CHANGES.
@@ -21,6 +22,7 @@
 3. Don't install packages without stating why first.
 4. Don't create files that weren't part of the requested task.
 5. **MANDATORY PRE-CODING UX AUDIT**: Before writing or modifying any UI code, you MUST activate the `ux_audit` skill and evaluate the plan/feature from a layperson's perspective (Nielsen's Heuristics). NEVER skip this brainstorming/auditing phase.
+6. **WRITE PAGE IS FROZEN**: NEVER modify `src/app/[locale]/write/page.tsx` under ANY circumstances. This file is locked. Do not touch it even if the task involves a global UI refactor. Wait for explicit user approval before ever editing this file.
 
 ## Project Context
 - This is "Hello Liar" — an anonymous interactive storytelling platform.

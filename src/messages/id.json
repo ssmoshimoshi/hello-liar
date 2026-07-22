@@ -28,7 +28,14 @@
     "adminReady": "Siap (25+)",
     "adminPublished": "Selesai",
     "btnIllustrate": "Gambar Ini",
-    "uploadTitle": "Unggah Seni",
-    "uploadBtn": "Terbitkan Seni"
+    "uploadTitle": "Unggah Karya",
+    "uploadBtn": "Terbitkan Karya",
+    "navVault": "The Vault",
+    "vaultTitle": "Gema Pikiran",
+    "vaultSubtitle": "Ruang ini hanya hidup di ingatan perangkat ini. Hapus cache Anda, dan semua kebohongan ini akan benar-benar lenyap.",
+    "vaultWritten": "Yang Kutulis",
+    "vaultResonated": "Yang Kurasa",
+    "vaultEmptyWritten": "Anda belum menulis kebohongan apa pun.",
+    "vaultEmptyResonated": "Anda belum merasakan kebohongan apa pun."
   }
 }
