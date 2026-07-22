@@ -1,12 +1,13 @@
-import { Playfair_Display, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import FloatingNav from '@/components/FloatingNav';
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cormorant = Cormorant_Garamond({
+  weight: ['300', '400', '500', '600', '700'],
+  variable: "--font-serif-light",
   subsets: ["latin"],
 });
 
@@ -71,7 +72,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${playfair.variable} ${inter.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${inter.variable} h-full antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col font-serif bg-background text-foreground relative pb-32 md:pb-0">
         <NextIntlClientProvider messages={messages}>

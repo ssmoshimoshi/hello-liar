@@ -203,8 +203,8 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
       initial={{ opacity: 0, scale: 0.95 }}
     >
       {/* Author ID at the top */}
-      <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-50">
-        <span className="text-[10px] font-mono uppercase tracking-[0.4em]">
+      <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60">
+        <span className="font-discipline text-sm tracking-widest">
           Nᵒ {lie.id.slice(0, 8)}
         </span>
       </div>
@@ -224,7 +224,7 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
 
       {/* Core Content with X Strikethrough overlaid */}
       <div className="relative">
-        <p className={`font-[var(--font-playfair)] text-center leading-relaxed relative z-0 ${
+        <p className={`font-[var(--font-serif-light)] font-light text-center leading-relaxed relative z-0 ${
           content.length < 50 ? 'text-4xl md:text-5xl' : 
           content.length < 150 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'
         }`}>
@@ -243,12 +243,20 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         </motion.div>
       </div>
 
-      {/* Resonate Effect: "this is me" */}
+      {/* Doubt Effect: "empty" */}
+      <motion.div 
+        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
+        style={{ opacity: strikeOpacity }}
+      >
+        empty
+      </motion.div>
+
+      {/* Resonate Effect: "echoes" */}
       <motion.div 
         className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
         style={{ opacity: resonateOpacity }}
       >
-        this is me
+        echoes
       </motion.div>
 
     </motion.div>
