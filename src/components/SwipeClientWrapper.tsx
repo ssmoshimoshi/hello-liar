@@ -21,7 +21,7 @@ export default function SwipeClientWrapper() {
         <div className="flex-1 flex flex-col justify-center items-center px-4 w-full h-full relative z-10">
           <div className="mb-6 pointer-events-none">
             <p 
-              className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[var(--gray-400)] text-center" 
+              className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[var(--color-living-coral)] text-center font-medium" 
               style={{ fontFamily: 'var(--font-baskerville)' }}
             >
               Everyone lies. Some write it down.
