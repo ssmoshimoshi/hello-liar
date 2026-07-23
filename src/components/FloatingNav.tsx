@@ -107,7 +107,8 @@ export default function FloatingNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm"
+            className="fixed inset-0 z-40 backdrop-blur-sm"
+            style={{ backgroundColor: 'rgba(252, 118, 106, 0.15)' }}
             onClick={() => setIsOpen(false)}
           />
         )}
@@ -133,10 +134,10 @@ export default function FloatingNav() {
                   item.action();
                   setIsOpen(false);
                 }}
-                className={`absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg border backdrop-blur-md transition-colors ${
+                className={`absolute w-12 h-12 rounded-full flex items-center justify-center shadow-sm border backdrop-blur-md transition-colors ${
                   item.active 
-                    ? 'bg-foreground text-background border-transparent' 
-                    : 'bg-background/80 text-foreground border-border hover:bg-muted'
+                    ? 'bg-background text-foreground border-[var(--gray-300)]' 
+                    : 'bg-background/90 text-[var(--gray-400)] border-[var(--gray-200)] hover:text-foreground hover:border-[var(--gray-300)]'
                 }`}
                 initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
                 animate={{ 
