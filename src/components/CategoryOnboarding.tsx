@@ -64,7 +64,8 @@ export default function CategoryOnboarding({ onComplete }: Props) {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-3xl md:text-5xl font-[var(--font-baskerville)] font-black mb-8 text-center"
+            className="text-3xl md:text-5xl font-black mb-8 text-center"
+            style={{ fontFamily: 'var(--font-baskerville)' }}
           >
             Kebohongan apa yang ingin kamu baca hari ini?
           </motion.h1>

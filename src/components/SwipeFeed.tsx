@@ -224,10 +224,13 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
 
       {/* Core Content with X Strikethrough overlaid */}
       <div className="relative">
-        <p className={`font-[var(--font-special-elite)] text-center leading-relaxed relative z-0 ${
-          content.length < 50 ? 'text-2xl md:text-3xl' : 
-          content.length < 150 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl'
-        }`}>
+        <p 
+          className={`text-center leading-loose tracking-wide relative z-0 ${
+            content.length < 50 ? 'text-2xl md:text-3xl' : 
+            content.length < 150 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl'
+          }`}
+          style={{ fontFamily: 'var(--font-special-elite)' }}
+        >
           &ldquo;{content}&rdquo;
         </p>
 
