@@ -148,7 +148,15 @@ export default function SwipeFeed({ selectedCategories }: Props) {
       setHasMore(false);
     }
 
-    setLies(prev => [...prev, ...data]);
+    setLies(prev => {
+      const newLies = [...prev];
+      data.forEach(item => {
+        if (!newLies.some(l => l.id === item.id)) {
+          newLies.push(item);
+        }
+      });
+      return newLies;
+    });
     setLoading(false);
   }, []);
 
