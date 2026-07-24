@@ -23,6 +23,7 @@
 4. Don't create files that weren't part of the requested task.
 5. **MANDATORY PRE-CODING UX AUDIT**: Before writing or modifying any UI code, you MUST activate the `ux_audit` skill and evaluate the plan/feature from a layperson's perspective (Nielsen's Heuristics). NEVER skip this brainstorming/auditing phase.
 6. **WRITE PAGE IS FROZEN**: NEVER modify `src/app/[locale]/write/page.tsx` under ANY circumstances. This file is locked. Do not touch it even if the task involves a global UI refactor. Wait for explicit user approval before ever editing this file.
+7. **STRICT COMMAND COMPLIANCE**: Hanya ubah apa yang diperintahkan. Jangan menambah, mengurangi, atau memodifikasi elemen/logika/style yang TIDAK secara eksplisit disebutkan dalam perintah user. Jika ada keraguan, tanyakan dulu sebelum mengubah.
 
 ## Project Context
 - This is "Hello Liar" — an anonymous interactive storytelling platform.

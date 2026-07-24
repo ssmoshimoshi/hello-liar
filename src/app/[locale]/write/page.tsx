@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { submitLie } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import VoronoiBackground from '@/components/VoronoiBackground';
@@ -17,6 +17,22 @@ export default function WritePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReleasing, setIsReleasing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showShockwave, setShowShockwave] = useState(false);
+
+  // Header reveal logic: letters appear randomly starting at charCount 31
+  const headerText = locale === 'en' ? 'The Void is Listening' : 'Kehampaan Mendengarkan';
+  
+  const revealOrder = useMemo(() => {
+    const indices = headerText.split('').map((ch, i) => ch !== ' ' ? i : -1).filter(i => i !== -1);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices;
+  }, [headerText]);
+
+  const revealCount = Math.max(0, Math.min(charCount - 30, revealOrder.length));
+  const revealedSet = new Set(revealOrder.slice(0, revealCount));
 
   useEffect(() => {
     // Slight delay to let the fade-in happen before focusing
@@ -39,7 +55,8 @@ export default function WritePage() {
     }
 
     setIsSubmitting(true);
-    setIsReleasing(true); // Trigger catharsis animation
+    setIsReleasing(true);
+    setShowShockwave(true); // Trigger shockwave catharsis
     
     const res = await submitLie(content, content);
     
@@ -52,22 +69,61 @@ export default function WritePage() {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
       setIsReleasing(false);
+      setShowShockwave(false);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-[var(--color-living-coral)] text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000">
       
+      {/* Shockwave Effect */}
+      {showShockwave && (
+        <>
+          <style>{`
+            @keyframes shockwave-ring {
+              0% { transform: scale(0); opacity: 1; border-width: 6px; }
+              100% { transform: scale(3); opacity: 0; border-width: 1px; }
+            }
+            @keyframes shockwave-fill {
+              0% { transform: scale(0); }
+              100% { transform: scale(1); }
+            }
+          `}</style>
+          <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none">
+            <div style={{
+              width: '200vmax', height: '200vmax', borderRadius: '50%',
+              border: '4px solid white',
+              animation: 'shockwave-ring 0.8s ease-out forwards',
+            }} />
+          </div>
+          <div className="fixed inset-0 z-[199] flex items-center justify-center pointer-events-none">
+            <div style={{
+              width: '200vmax', height: '200vmax', borderRadius: '50%',
+              background: 'white',
+              animation: 'shockwave-fill 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+            }} />
+          </div>
+        </>
+      )}
+
       {/* Dynamic Voronoi Void */}
       <VoronoiBackground charCount={charCount} />
 
-      {/* Editorial header (Subtle) */}
-      <div className={`absolute top-12 left-1/2 -translate-x-1/2 text-center transition-all duration-1000 z-10 w-full px-4 ${isReleasing ? 'opacity-0' : 'opacity-60'}`}>
+      {/* Editorial header with random letter reveal */}
+      <div className={`absolute top-12 left-1/2 -translate-x-1/2 text-center transition-all duration-1000 z-10 w-full px-4 ${isReleasing ? 'opacity-0' : 'opacity-100'}`}>
         <p 
-          className="text-lg md:text-xl font-medium tracking-widest text-[var(--color-living-coral)] opacity-80 mix-blend-plus-lighter"
-          style={{ fontFamily: 'var(--font-baskerville)' }}
+          className="text-lg md:text-xl font-medium tracking-widest"
+          style={{ fontFamily: 'var(--font-baskerville)', color: 'var(--color-living-coral)' }}
         >
-          {locale === 'en' ? 'The Void is Listening' : 'Kehampaan Mendengarkan'}
+          {headerText.split('').map((ch, i) => (
+            <span 
+              key={i} 
+              className="transition-opacity duration-500"
+              style={{ opacity: ch === ' ' ? 1 : (revealedSet.has(i) ? 0.8 : 0) }}
+            >
+              {ch === ' ' ? '\u00A0' : ch}
+            </span>
+          ))}
         </p>
       </div>
 
@@ -105,14 +161,9 @@ export default function WritePage() {
           <button 
             type="submit" 
             disabled={isSubmitting || content.length < 10}
-            className="group relative flex items-center justify-center w-32 h-32 md:w-40 md:h-40 rounded-full border border-white/20 hover:border-white/50 transition-all duration-500 disabled:opacity-0 disabled:scale-75 cursor-pointer"
+            className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold text-white/60 hover:text-[var(--color-living-coral)] active:text-[var(--color-living-coral)] transition-all duration-300 disabled:opacity-0 cursor-pointer"
           >
-            {/* Breathing pulse ring */}
-            <div className="absolute inset-0 rounded-full border border-white/10 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-            
-            <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold z-10 group-hover:scale-110 transition-transform duration-300">
-              {isSubmitting ? '...' : t('releaseBtn')}
-            </span>
+            {isSubmitting ? '...' : t('releaseBtn')}
           </button>
         </div>
       </form>
