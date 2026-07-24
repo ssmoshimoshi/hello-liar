@@ -72,8 +72,8 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
   return (
     <motion.div
       className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, rotateY: 180 }}
+      animate={{ opacity: 1, rotateY: 180 }}
       exit={{ opacity: 0, transition: { duration: 1 } }}
     >
       <div className="relative flex items-center justify-center">
@@ -167,7 +167,7 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   // Initial reveal for the very first card loaded
   useEffect(() => {
     if (!loading && lies.length > 0 && showCounter === null) {
-      const t = setTimeout(() => setIsRevealing(false), 800);
+      const t = setTimeout(() => setIsRevealing(false), 1200);
       return () => clearTimeout(t);
     }
   }, [loading, lies.length, showCounter]);
@@ -258,16 +258,7 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   return (
     <div className="relative w-full max-w-md mx-auto flex items-center justify-center perspective-1000" style={{ height: 'clamp(50vh, 65vh, 80vh)' }}>
       
-      {/* Counter Overlay choreographed sequence */}
-      <AnimatePresence>
-        {showCounter && (
-          <SwipeCounter 
-            count={showCounter === 'empty' ? emptyCount : echoesCount} 
-            type={showCounter} 
-            onComplete={onCounterComplete}
-          />
-        )}
-      </AnimatePresence>
+      {/* Counter Overlay is now handled internally by SwipeCard's back face */}
 
       {stack.map((lie, index) => {
         const isTop = index === stack.length - 1;
@@ -281,6 +272,9 @@ export default function SwipeFeed({ selectedCategories }: Props) {
             onSwipe={(dir) => handleSwipe(dir, lie.id)}
             index={index}
             total={stack.length}
+            showCounter={isTop ? showCounter : null}
+            count={showCounter === 'empty' ? emptyCount : echoesCount}
+            onCounterComplete={onCounterComplete}
           />
         );
       })}
@@ -296,15 +290,25 @@ interface CardProps {
   onSwipe: (dir: 'left' | 'right') => void;
   index: number;
   total: number;
+  showCounter: 'empty' | 'echoes' | null;
+  count: number;
+  onCounterComplete: () => void;
 }
 
-function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total, showCounter, count, onCounterComplete }: CardProps) {
+  // Imperfect Stacking (Random Offset)
+  const [offset] = useState(() => ({
+    x: (Math.random() - 0.5) * 8,
+    y: (Math.random() - 0.5) * 8,
+    r: (Math.random() - 0.5) * 6
+  }));
+
+  const x = useMotionValue(offset.x);
+  const y = useMotionValue(offset.y);
   const controls = useAnimation();
   
-  // Dynamic rotation: wider range so high velocity throws cause more spin
-  const rotate = useTransform(x, [-500, 500], [-30, 30]);
+  // Dynamic rotation: wider range so high velocity throws cause more spin, resting at random offset
+  const rotate = useTransform(x, [-500, offset.x, 500], [-30 + offset.r, offset.r, 30 + offset.r]);
   const scale = 1;
 
   // Background and text color transitions for swipe directions
@@ -361,10 +365,10 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       });
       onSwipe('left');
     } else {
-      // Snap back with spring
+      // Snap back with spring to imperfect resting place
       controls.start({ 
-        x: 0, 
-        y: 0, 
+        x: offset.x, 
+        y: offset.y, 
         transition: { type: 'spring', stiffness: 400, damping: 25 } 
       });
     }
@@ -493,15 +497,20 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
           </motion.div>
         </motion.div>
 
-        {/* BACK FACE (Living Coral Cover) */}
+        {/* BACK FACE (Living Coral Cover & Counter) */}
         <motion.div 
-          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden pointer-events-none"
+          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden flex flex-col items-center justify-center"
           style={{ 
             backgroundColor: 'var(--color-living-coral)',
             backfaceVisibility: 'hidden',
-            rotateY: 180
+            rotateY: 180,
+            pointerEvents: 'none'
           }}
-        />
+        >
+          {isTop && showCounter && (
+            <SwipeCounter count={count} type={showCounter} onComplete={onCounterComplete} />
+          )}
+        </motion.div>
         
       </motion.div>
     </motion.div>
