@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, useAnimation, PanInfo } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useAnimation, PanInfo, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { addResonatedLie } from '@/lib/deviceAuth';
 import type { Database } from '@/types/database';
@@ -12,6 +12,78 @@ interface Props {
   selectedCategories: string[];
 }
 
+// Particle component for the counter burst effect
+function ParticleBurst({ color }: { color: string }) {
+  const particles = Array.from({ length: 16 }, (_, i) => {
+    const angle = (i / 16) * Math.PI * 2;
+    const distance = 40 + Math.random() * 60;
+    return {
+      id: i,
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+    };
+  });
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute w-1 h-1 rounded-full"
+          style={{ backgroundColor: color }}
+          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+          animate={{ x: p.x, y: p.y, opacity: 0, scale: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Counter overlay shown between card transitions
+function SwipeCounter({ count, type }: { count: number; type: 'empty' | 'echoes' }) {
+  const [showParticles, setShowParticles] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowParticles(true), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div className="relative">
+        <motion.span
+          className="text-5xl font-mono font-bold text-[var(--color-living-coral)]"
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: showParticles ? 0 : 1, opacity: showParticles ? 0 : 1 }}
+          transition={{ 
+            scale: { type: 'spring', stiffness: 300, damping: 15 },
+            opacity: { duration: 0.2, delay: showParticles ? 0 : 0 }
+          }}
+        >
+          {count}
+        </motion.span>
+        
+        {showParticles && <ParticleBurst color="var(--color-living-coral)" />}
+      </div>
+      
+      <motion.span
+        className="text-[10px] font-mono uppercase tracking-[0.4em] text-[var(--gray-400)] mt-4"
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: showParticles ? 0 : 0.6, y: 0 }}
+        transition={{ delay: 0.15 }}
+      >
+        {type}
+      </motion.span>
+    </motion.div>
+  );
+}
+
 export default function SwipeFeed({ selectedCategories }: Props) {
   const [lies, setLies] = useState<Lie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +92,11 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   
   // To show tutorial on first card
   const [isFirstCard, setIsFirstCard] = useState(true);
+
+  // Swipe counters
+  const [emptyCount, setEmptyCount] = useState(0);
+  const [echoesCount, setEchoesCount] = useState(0);
+  const [showCounter, setShowCounter] = useState<'empty' | 'echoes' | null>(null);
 
   const fetchLies = useCallback(async (pageNumber: number) => {
     // Note: In MVP, we fetch all. Later, filter by selectedCategories using .overlaps('categories', selectedCategories)
@@ -53,6 +130,15 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   const handleSwipe = async (direction: 'left' | 'right', lieId: string) => {
     setIsFirstCard(false);
     
+    // Show counter animation
+    if (direction === 'left') {
+      setEmptyCount(prev => prev + 1);
+      setShowCounter('empty');
+    } else {
+      setEchoesCount(prev => prev + 1);
+      setShowCounter('echoes');
+    }
+
     // Remove the card from local state
     setLies(prev => prev.filter(l => l.id !== lieId));
 
@@ -71,6 +157,9 @@ export default function SwipeFeed({ selectedCategories }: Props) {
       // Doubt
       await supabase.rpc('increment_doubt', { lie_id: lieId });
     }
+
+    // Clear counter after animation completes
+    setTimeout(() => setShowCounter(null), 800);
   };
 
   if (loading && lies.length === 0) {
@@ -81,12 +170,37 @@ export default function SwipeFeed({ selectedCategories }: Props) {
     );
   }
 
-  if (lies.length === 0) {
+  // Empty state: all stories exhausted
+  if (lies.length === 0 && !loading) {
     return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <p className="font-mono text-gray-500 text-sm uppercase tracking-widest text-center px-6">
-          Tidak ada lagi kebohongan hari ini.
+      <div className="flex flex-col justify-center items-center h-[60vh] gap-6">
+        <h2 
+          className="text-3xl md:text-4xl font-medium text-[var(--color-living-coral)] text-center"
+          style={{ fontFamily: 'var(--font-baskerville)' }}
+        >
+          Keheningan.
+        </h2>
+        <p className="font-mono text-[var(--gray-400)] text-xs uppercase tracking-widest text-center px-6">
+          Tidak ada lagi kebohongan untuk hari ini.
         </p>
+        
+        {/* Stats summary */}
+        {(emptyCount > 0 || echoesCount > 0) && (
+          <div className="flex gap-8 mt-4 font-mono text-xs uppercase tracking-widest">
+            <span className="text-[var(--gray-400)]">empty: <span className="text-foreground">{emptyCount}</span></span>
+            <span className="text-[var(--gray-400)]">echoes: <span className="text-foreground">{echoesCount}</span></span>
+          </div>
+        )}
+        
+        <button
+          onClick={() => {
+            localStorage.removeItem('hl_categories');
+            window.location.reload();
+          }}
+          className="mt-4 font-mono text-[10px] uppercase tracking-widest text-[var(--color-living-coral)] hover:text-foreground transition-colors cursor-pointer"
+        >
+          ganti kategori
+        </button>
       </div>
     );
   }
@@ -95,7 +209,18 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   const stack = [...lies].reverse();
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[60vh] md:h-[70vh] flex items-center justify-center perspective-1000">
+    <div className="relative w-full max-w-md mx-auto flex items-center justify-center" style={{ height: 'clamp(50vh, 65vh, 80vh)' }}>
+      
+      {/* Counter Overlay */}
+      <AnimatePresence>
+        {showCounter && (
+          <SwipeCounter 
+            count={showCounter === 'empty' ? emptyCount : echoesCount} 
+            type={showCounter} 
+          />
+        )}
+      </AnimatePresence>
+
       {stack.map((lie, index) => {
         const isTop = index === stack.length - 1;
         return (
@@ -152,15 +277,10 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
     ['rgba(255,255,255,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)']
   );
 
-  // Blur effect for both sides
-  const blurValue = useTransform(x, [-150, 0, 150], [8, 0, 8]);
-  // Note: Framer motion style object doesn't support backdropFilter directly via useTransform well without a custom template, 
-  // but we can apply it via a template function or just rely on a persistent backdrop-blur class and let opacity of background color do the work.
-
   // Strikethrough for doubt (left)
   const strikeOpacity = useTransform(x, [0, -100], [0, 1]);
   
-  // "this is me" for resonate (right)
+  // "echoes" for resonate (right)
   const resonateOpacity = useTransform(x, [0, 100], [0, 1]);
 
   const handleDragEnd = async (e: any, info: PanInfo) => {
@@ -182,9 +302,17 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
     controls.start({ opacity: 1, scale: 1, transition: { duration: 0.3 } });
   }, [controls]);
 
+  // Dynamic text sizing based on content length
+  const getTextClasses = () => {
+    if (content.length < 50) return 'text-2xl md:text-3xl';
+    if (content.length < 150) return 'text-xl md:text-2xl';
+    if (content.length < 400) return 'text-base md:text-lg';
+    return 'text-sm md:text-base';
+  };
+
   return (
     <motion.div
-      className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border backdrop-blur-md"
+      className="absolute w-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border backdrop-blur-md"
       style={{
         x,
         rotate,
@@ -193,7 +321,9 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         zIndex: index,
         backgroundColor,
         borderColor,
-        color: textColor
+        color: textColor,
+        minHeight: '50vh',
+        maxHeight: '80vh',
       }}
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
@@ -223,12 +353,9 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
       )}
 
       {/* Core Content with X Strikethrough overlaid */}
-      <div className="relative">
+      <div className="relative max-h-[60vh] overflow-y-auto">
         <p 
-          className={`text-center leading-loose tracking-wide relative z-0 ${
-            content.length < 50 ? 'text-2xl md:text-3xl' : 
-            content.length < 150 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl'
-          }`}
+          className={`text-center leading-loose tracking-wide relative z-0 ${getTextClasses()}`}
           style={{ fontFamily: 'var(--font-special-elite)' }}
         >
           &ldquo;{content}&rdquo;

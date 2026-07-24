@@ -49,50 +49,45 @@ export default function FloatingNav() {
 
   const RADIUS = 90; // Distance of items from center
 
+  const handleReset = () => {
+    localStorage.removeItem('hl_categories');
+    window.location.reload();
+  };
+
   const navItems = [
     {
       id: 'home',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
-        </svg>
-      ),
+      label: 'read',
       action: () => router.push(`/${locale}`),
       active: isHome,
     },
     {
       id: 'gallery',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-        </svg>
-      ),
+      label: 'gallery',
       action: () => router.push(`/${locale}/illustrated`),
       active: isGallery,
     },
     {
       id: 'write',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/>
-        </svg>
-      ),
+      label: 'write',
       action: () => router.push(`/${locale}/write`),
       active: isWrite,
     },
     {
       id: 'vault',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-        </svg>
-      ),
+      label: 'vault',
       action: () => router.push(`/${locale}/vault`),
       active: isVault,
     },
     {
+      id: 'reset',
+      label: 'reset',
+      action: handleReset,
+      active: false,
+    },
+    {
       id: 'lang',
-      icon: <span className="text-[11px] font-sans font-bold uppercase">{locale}</span>,
+      label: locale === 'en' ? 'ID' : 'EN',
       action: () => switchLocale(locale === 'en' ? 'id' : 'en'),
       active: false,
     },
@@ -134,7 +129,7 @@ export default function FloatingNav() {
                   item.action();
                   setIsOpen(false);
                 }}
-                className={`absolute w-12 h-12 rounded-full flex items-center justify-center shadow-sm border backdrop-blur-md transition-colors ${
+                className={`absolute w-14 h-14 rounded-full flex items-center justify-center shadow-sm border backdrop-blur-md transition-colors ${
                   item.active 
                     ? 'bg-background text-foreground border-[var(--gray-300)]' 
                     : 'bg-background/90 text-[var(--gray-400)] border-[var(--gray-200)] hover:text-foreground hover:border-[var(--gray-300)]'
@@ -154,7 +149,7 @@ export default function FloatingNav() {
                 }}
                 aria-label={item.id}
               >
-                {item.icon}
+                <span className="text-[9px] font-mono font-bold uppercase tracking-wider">{item.label}</span>
               </motion.button>
             );
           })}
