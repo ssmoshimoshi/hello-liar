@@ -80,7 +80,7 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
         {/* The Number */}
         <motion.span
           className="text-3xl font-mono mix-blend-multiply"
-          style={{ color: '#4b5563' }} // gray-600 for ash effect
+          style={{ color: '#9ca3af' }} // light gray (gray-400)
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
             opacity: showParticles ? 0 : 0.9, 
@@ -93,13 +93,13 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
           {count}
         </motion.span>
         
-        {showParticles && <ParticleBurst color="#6b7280" />}
+        {showParticles && <ParticleBurst color="#9ca3af" />}
       </div>
       
       {/* The Label */}
       <motion.span
         className="text-[10px] font-mono uppercase tracking-[0.5em] mt-6 mix-blend-multiply"
-        style={{ color: '#4b5563' }}
+        style={{ color: '#9ca3af' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: showParticles ? 0 : 0.6 }}
         transition={{ duration: 1.2, ease: 'easeInOut' }}
@@ -399,6 +399,13 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
             color: textColor,
           }}
         >
+          {/* Author/Entry Number */}
+          <div className="absolute top-6 left-6 flex items-center justify-between w-[calc(100%-3rem)] pointer-events-none opacity-40 z-10">
+            <span className="font-mono text-[8px] md:text-[9px] tracking-widest uppercase">
+              Nᵒ {lie.id.slice(0, 8)}
+            </span>
+          </div>
+
           {isFirstCard && (
             <motion.div 
               className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none z-10"
