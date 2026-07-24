@@ -93,19 +93,17 @@ export default function WritePage() {
     setIsSubmitting(true);
     setPhase('detonating');
 
-    // Fade out header
+    // Fade out header and button smoothly
     if (headerRef.current) {
       headerRef.current.style.transition = 'opacity 2s ease';
       headerRef.current.style.opacity = '0';
     }
     
-    // Float the button up like a balloon/letter being released
+    // Fade out button in place
     const btn = formRef.current?.querySelector('button');
     if (btn) {
-      btn.style.transition = 'transform 2.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 2s ease-in, filter 2s ease';
-      btn.style.transform = 'translateY(-40vh) scale(0.9)';
+      btn.style.transition = 'opacity 1s ease';
       btn.style.opacity = '0';
-      btn.style.filter = 'blur(10px)';
     }
 
     const res = await submitLie(content, content);
@@ -169,13 +167,23 @@ export default function WritePage() {
   return (
     <div className={`fixed top-0 left-0 w-full h-[100dvh] text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
       
-      {/* Void Expansion (Smooth Crossfade) */}
+      {/* Void Expansion (Fog Parting) */}
       <div
-        className="fixed inset-0 pointer-events-none z-[198]"
+        className="fixed pointer-events-none rounded-full z-[198]"
         style={{
-          backgroundColor: '#ffffff',
-          opacity: phase !== 'writing' ? 1 : 0,
-          transition: 'opacity 3s ease-in-out',
+          top: `${clickPosRef.current.y}px`,
+          left: `${clickPosRef.current.x}px`,
+          width: '120px', // Base size of the fog circle
+          height: '120px',
+          marginTop: '-60px',
+          marginLeft: '-60px',
+          background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,0) 80%)',
+          filter: 'blur(10px)',
+          opacity: phase !== 'writing' ? 1 : (holdProgress > 0 ? holdProgress * 0.8 : 0),
+          transform: phase !== 'writing' ? 'scale(50)' : `scale(${holdProgress * 1.5})`, // Scale 50x = 6000px diameter
+          transition: phase !== 'writing' 
+            ? 'transform 4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s' 
+            : (holdProgress === 0 ? 'transform 0.5s ease-out, opacity 0.5s' : 'none'),
         }}
       />
 
@@ -278,16 +286,8 @@ export default function WritePage() {
             className="relative px-12 py-8 text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold text-white/50 transition-all duration-300 disabled:opacity-0 cursor-pointer select-none hover:text-white"
             style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
           >
-            {/* Blurry Aura Progress (Misty Glow) */}
-            <div 
-              className="absolute inset-0 bg-white origin-center rounded-full pointer-events-none"
-              style={{
-                transform: `scale(${holdProgress * 1.5})`, // Grows to envelop the text
-                opacity: holdProgress > 0 ? holdProgress * 0.5 : 0,
-                filter: 'blur(30px)',
-                transition: holdProgress === 0 ? 'transform 0.5s ease-out, opacity 0.5s' : 'none',
-              }}
-            />
+            {/* We moved the aura to the global void circle, so no aura here */}
+            
             {/* Inner text */}
             <span 
               className="relative z-10 transition-all duration-300" 
