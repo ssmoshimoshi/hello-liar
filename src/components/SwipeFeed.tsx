@@ -79,8 +79,8 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
       <div className="relative flex items-center justify-center">
         {/* The Number */}
         <motion.span
-          className="text-3xl font-mono mix-blend-multiply"
-          style={{ color: '#9ca3af' }} // light gray (gray-400)
+          className="text-6xl font-mono mix-blend-multiply"
+          style={{ color: '#8c312f' }} // deep burgundy for contrast against coral and visibility on white
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
             opacity: showParticles ? 0 : 0.9, 
@@ -93,7 +93,7 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
           {count}
         </motion.span>
         
-        {showParticles && <ParticleBurst color="#9ca3af" />}
+        {showParticles && <ParticleBurst color="#8c312f" />}
       </div>
       
       {/* The Label */}
