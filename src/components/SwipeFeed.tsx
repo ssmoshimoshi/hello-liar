@@ -16,16 +16,23 @@ interface Props {
 // Particle component for the slow, magical dust effect
 function ParticleBurst({ color }: { color: string }) {
   // Generate particles once on mount
-  const particles = Array.from({ length: 40 }, (_, i) => {
-    // Spread generally upwards (-PI/2 is straight up)
-    const angle = (Math.random() * Math.PI) - Math.PI; 
-    const distance = 30 + Math.random() * 100;
+  const particles = Array.from({ length: 500 }, (_, i) => {
+    // Spread angle in radians (e.g. 360 deg = Math.PI * 2)
+    const angleRange = Math.PI * 2;
+    // Start angle so it centers pointing UP (-PI/2)
+    const startAngle = -Math.PI / 2 - (angleRange / 2);
+    const angle = startAngle + (Math.random() * angleRange);
+    
+    const distance = Math.random() * 500;
+    const size = 0.5 + Math.random() * 4;
+    
     return {
       id: i,
       x: Math.cos(angle) * distance,
-      y: Math.sin(angle) * distance - 50, // Bias upwards
-      delay: Math.random() * 0.8,
-      duration: 1.5 + Math.random() * 2 // Slow motion
+      y: Math.sin(angle) * distance,
+      size,
+      delay: Math.random() * (2.5 * 0.3), // Stagger start times
+      duration: 2.5 * 0.7 + Math.random() * (2.5 * 0.3)
     };
   });
 
@@ -34,8 +41,12 @@ function ParticleBurst({ color }: { color: string }) {
       {particles.map((p) => (
         <motion.div
           key={p.id}
-          className="absolute w-[2px] h-[2px] rounded-full"
-          style={{ backgroundColor: color, boxShadow: `0 0 4px ${color}` }}
+          className="absolute rounded-full"
+          style={{ 
+            backgroundColor: color,
+            width: p.size, 
+            height: p.size
+          }}
           initial={{ x: 0, y: 0, opacity: 0.8 }}
           animate={{ x: p.x, y: p.y, opacity: 0 }}
           transition={{ duration: p.duration, delay: p.delay, ease: 'easeOut' }}
