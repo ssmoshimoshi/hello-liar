@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSoundEffect } from '@/hooks/useSoundEffect';
 
 export default function FloatingNav() {
   const locale = useLocale();
@@ -13,6 +14,7 @@ export default function FloatingNav() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const { playSound } = useSoundEffect();
 
   const isHome = pathname === `/${locale}`;
 
@@ -126,6 +128,7 @@ export default function FloatingNav() {
               <motion.button
                 key={item.id}
                 onClick={() => {
+                  playSound('click');
                   item.action();
                   setIsOpen(false);
                 }}
@@ -157,7 +160,10 @@ export default function FloatingNav() {
 
         {/* Main FAB */}
         <motion.button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            playSound('click');
+            setIsOpen(!isOpen);
+          }}
           className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-colors duration-300 ${
             isOpen ? 'bg-[var(--color-living-coral)] text-white' : 'bg-foreground text-background'
           }`}

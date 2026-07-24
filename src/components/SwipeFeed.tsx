@@ -5,6 +5,7 @@ import { motion, useMotionValue, useTransform, useAnimation, PanInfo, AnimatePre
 import { supabase } from '@/lib/supabase';
 import { addResonatedLie } from '@/lib/deviceAuth';
 import type { Database } from '@/types/database';
+import { useSoundEffect } from '@/hooks/useSoundEffect';
 
 type Lie = Database['public']['Tables']['lies']['Row'];
 
@@ -89,6 +90,7 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const { playSound } = useSoundEffect();
   
   // To show tutorial on first card
   const [isFirstCard, setIsFirstCard] = useState(true);
@@ -132,9 +134,11 @@ export default function SwipeFeed({ selectedCategories }: Props) {
     
     // Show counter animation
     if (direction === 'left') {
+      playSound('tear');
       setEmptyCount(prev => prev + 1);
       setShowCounter('empty');
     } else {
+      playSound('heartbeat');
       setEchoesCount(prev => prev + 1);
       setShowCounter('echoes');
     }
