@@ -72,8 +72,8 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
   return (
     <motion.div
       className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none"
-      initial={{ opacity: 0, rotateY: 180 }}
-      animate={{ opacity: 1, rotateY: 180 }}
+      initial={{ opacity: 0, scaleX: -1 }}
+      animate={{ opacity: 1, scaleX: -1 }}
       exit={{ opacity: 0, transition: { duration: 1 } }}
     >
       <div className="relative flex items-center justify-center">
@@ -497,7 +497,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
         {/* BACK FACE (Living Coral Cover & Counter) */}
         <motion.div 
-          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden flex flex-col items-center justify-center"
+          className="absolute inset-0 w-full h-full rounded-2xl flex flex-col items-center justify-center"
           style={{ 
             backgroundColor: 'var(--color-living-coral)',
             backfaceVisibility: 'hidden',
