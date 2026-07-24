@@ -71,12 +71,17 @@ export default function HoldButton({
       style={{ WebkitUserSelect: 'none' }}
       {...props}
     >
-      {/* Progress Bar Background */}
-      <div 
-        className="absolute inset-0 bg-foreground/10"
-        style={{ width: `${progress}%`, transition: isHolding ? 'none' : 'width 0.2s ease' }}
-      />
-      <span className="relative z-10 flex items-center justify-center gap-2 pointer-events-none w-full h-full">
+      <span 
+        className="relative z-10 flex items-center justify-center gap-2 pointer-events-none w-full h-full font-bold"
+        style={{
+          backgroundImage: 'linear-gradient(to right, var(--color-living-coral) 50%, var(--gray-500) 50%)',
+          backgroundSize: '200% 100%',
+          backgroundPosition: `${100 - progress}% 0`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          transition: isHolding ? 'none' : 'background-position 0.2s ease',
+        }}
+      >
         {children}
       </span>
     </button>
