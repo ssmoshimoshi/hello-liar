@@ -93,33 +93,41 @@ export default function WritePage() {
     setIsSubmitting(true);
     setPhase('detonating');
 
-    // Fade out header and button smoothly
+    // Fade out header
     if (headerRef.current) {
       headerRef.current.style.transition = 'opacity 2s ease';
       headerRef.current.style.opacity = '0';
     }
+    
+    // Float the button up like a balloon/letter being released
     const btn = formRef.current?.querySelector('button');
     if (btn) {
-      btn.style.transition = 'opacity 1s ease';
+      btn.style.transition = 'transform 2.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 2s ease-in, filter 2s ease';
+      btn.style.transform = 'translateY(-40vh) scale(0.9)';
       btn.style.opacity = '0';
+      btn.style.filter = 'blur(10px)';
     }
 
     const res = await submitLie(content, content);
     
     if (res.success && res.id) {
-      setTimeout(() => setPhase('void'), 2500); // 2.5s to let the blur fade finish
-      setTimeout(() => setPhase('forgiven'), 4000); 
+      // The white fade takes 3 seconds (see JSX below).
+      setTimeout(() => setPhase('forgiven'), 3000); 
       
       setTimeout(() => {
         router.push(`/${locale}/read/${res.id}`);
-      }, 8000); 
+      }, 7000); 
     } else {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
       setPhase('writing');
       setHoldProgress(0);
       if (headerRef.current) headerRef.current.style.opacity = '1';
-      if (btn) btn.style.opacity = '1';
+      if (btn) {
+        btn.style.transform = '';
+        btn.style.opacity = '1';
+        btn.style.filter = '';
+      }
     }
   };
 
@@ -161,20 +169,13 @@ export default function WritePage() {
   return (
     <div className={`fixed top-0 left-0 w-full h-[100dvh] text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
       
-      {/* Void Expansion (Breathe & Dissolve) */}
+      {/* Void Expansion (Smooth Crossfade) */}
       <div
-        className="fixed pointer-events-none rounded-full z-[198]"
+        className="fixed inset-0 pointer-events-none z-[198]"
         style={{
           backgroundColor: '#ffffff',
-          top: `${clickPosRef.current.y}px`,
-          left: `${clickPosRef.current.x}px`,
-          width: '2px',
-          height: '2px',
-          marginTop: '-1px',
-          marginLeft: '-1px',
-          transform: `scale(${phase !== 'writing' ? 4000 : 0})`, // Scale massive enough to cover any screen
-          transition: 'transform 2.5s cubic-bezier(0.4, 0, 0.2, 1)',
-          opacity: 1,
+          opacity: phase !== 'writing' ? 1 : 0,
+          transition: 'opacity 3s ease-in-out',
         }}
       />
 
@@ -183,12 +184,12 @@ export default function WritePage() {
 
       {/* Catharsis Sequence: The Voice */}
       <div 
-        className={`fixed inset-0 z-[300] flex items-center justify-center pointer-events-none transition-opacity duration-1000 ${
+        className={`fixed inset-0 z-[300] flex items-center justify-center pointer-events-none transition-opacity duration-[2000ms] ${
           phase === 'forgiven' ? 'opacity-100' : 'opacity-0'
         }`}
       >
         <p 
-          className="text-black text-xl md:text-2xl tracking-widest text-center px-6"
+          className="text-black text-sm md:text-base tracking-[0.2em] font-light text-center px-6"
           style={{ fontFamily: 'var(--font-baskerville)' }}
         >
           {locale === 'en' ? 'I am listening. And I have forgiven.' : 'Saya mendengarkan. Dan saya sudah memaafkan.'}
