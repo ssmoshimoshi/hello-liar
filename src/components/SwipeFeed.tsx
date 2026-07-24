@@ -13,28 +13,32 @@ interface Props {
   selectedCategories: string[];
 }
 
-// Particle component for the counter burst effect
+// Particle component for the slow, magical dust effect
 function ParticleBurst({ color }: { color: string }) {
-  const particles = Array.from({ length: 16 }, (_, i) => {
-    const angle = (i / 16) * Math.PI * 2;
-    const distance = 40 + Math.random() * 60;
+  // Generate particles once on mount
+  const particles = Array.from({ length: 40 }, (_, i) => {
+    // Spread generally upwards (-PI/2 is straight up)
+    const angle = (Math.random() * Math.PI) - Math.PI; 
+    const distance = 30 + Math.random() * 100;
     return {
       id: i,
       x: Math.cos(angle) * distance,
-      y: Math.sin(angle) * distance,
+      y: Math.sin(angle) * distance - 50, // Bias upwards
+      delay: Math.random() * 0.8,
+      duration: 1.5 + Math.random() * 2 // Slow motion
     };
   });
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
       {particles.map((p) => (
         <motion.div
           key={p.id}
-          className="absolute w-1 h-1 rounded-full"
-          style={{ backgroundColor: color }}
-          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-          animate={{ x: p.x, y: p.y, opacity: 0, scale: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="absolute w-[2px] h-[2px] rounded-full"
+          style={{ backgroundColor: color, boxShadow: `0 0 4px ${color}` }}
+          initial={{ x: 0, y: 0, opacity: 0.8 }}
+          animate={{ x: p.x, y: p.y, opacity: 0 }}
+          transition={{ duration: p.duration, delay: p.delay, ease: 'easeOut' }}
         />
       ))}
     </div>
@@ -42,42 +46,50 @@ function ParticleBurst({ color }: { color: string }) {
 }
 
 // Counter overlay shown between card transitions
-function SwipeCounter({ count, type }: { count: number; type: 'empty' | 'echoes' }) {
+function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty' | 'echoes'; onComplete: () => void }) {
   const [showParticles, setShowParticles] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowParticles(true), 400);
-    return () => clearTimeout(timer);
-  }, []);
+    // Number stays solid for 1.2s, then turns into dust
+    const timer1 = setTimeout(() => setShowParticles(true), 1200);
+    // Total sequence is 3s before triggering the card reveal
+    const timer2 = setTimeout(() => onComplete(), 3000); 
+    
+    return () => { clearTimeout(timer1); clearTimeout(timer2); };
+  }, [onComplete]);
 
   return (
     <motion.div
-      className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none"
+      className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, transition: { duration: 1 } }}
     >
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
+        {/* The Number */}
         <motion.span
-          className="text-5xl font-mono font-bold text-[var(--color-living-coral)]"
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: showParticles ? 0 : 1, opacity: showParticles ? 0 : 1 }}
-          transition={{ 
-            scale: { type: 'spring', stiffness: 300, damping: 15 },
-            opacity: { duration: 0.2, delay: showParticles ? 0 : 0 }
+          className="text-6xl font-mono text-white mix-blend-plus-lighter"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ 
+            opacity: showParticles ? 0 : 0.9, 
+            y: showParticles ? -15 : 0,
+            filter: showParticles ? 'blur(8px)' : 'blur(0px)',
+            scale: showParticles ? 1.1 : 1
           }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
         >
           {count}
         </motion.span>
         
-        {showParticles && <ParticleBurst color="var(--color-living-coral)" />}
+        {showParticles && <ParticleBurst color="#ffffff" />}
       </div>
       
+      {/* The Label */}
       <motion.span
-        className="text-[10px] font-mono uppercase tracking-[0.4em] text-[var(--gray-400)] mt-4"
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: showParticles ? 0 : 0.6, y: 0 }}
-        transition={{ delay: 0.15 }}
+        className="text-[10px] font-mono uppercase tracking-[0.5em] text-white/60 mt-6 mix-blend-plus-lighter"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showParticles ? 0 : 0.6 }}
+        transition={{ duration: 1.2, ease: 'easeInOut' }}
       >
         {type}
       </motion.span>
@@ -95,13 +107,15 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   // To show tutorial on first card
   const [isFirstCard, setIsFirstCard] = useState(true);
 
+  // Global state for choreographing the "Reveal" transition
+  const [isRevealing, setIsRevealing] = useState(true);
+
   // Swipe counters
   const [emptyCount, setEmptyCount] = useState(0);
   const [echoesCount, setEchoesCount] = useState(0);
   const [showCounter, setShowCounter] = useState<'empty' | 'echoes' | null>(null);
 
   const fetchLies = useCallback(async (pageNumber: number) => {
-    // Note: In MVP, we fetch all. Later, filter by selectedCategories using .overlaps('categories', selectedCategories)
     const limit = 10;
     const from = pageNumber * limit;
     const to = from + limit - 1;
@@ -129,10 +143,18 @@ export default function SwipeFeed({ selectedCategories }: Props) {
     fetchLies(0);
   }, [fetchLies]);
 
+  // Initial reveal for the very first card loaded
+  useEffect(() => {
+    if (!loading && lies.length > 0 && showCounter === null) {
+      const t = setTimeout(() => setIsRevealing(false), 800);
+      return () => clearTimeout(t);
+    }
+  }, [loading, lies.length, showCounter]);
+
   const handleSwipe = async (direction: 'left' | 'right', lieId: string) => {
     setIsFirstCard(false);
+    setIsRevealing(true); // Lock the next card immediately under a solid cover
     
-    // Show counter animation
     if (direction === 'left') {
       playSound('tear');
       setEmptyCount(prev => prev + 1);
@@ -143,10 +165,9 @@ export default function SwipeFeed({ selectedCategories }: Props) {
       setShowCounter('echoes');
     }
 
-    // Remove the card from local state
+    // Remove the swiped card. The next card visually becomes top but is covered.
     setLies(prev => prev.filter(l => l.id !== lieId));
 
-    // Fetch more if running low
     if (lies.length <= 3 && hasMore) {
       const nextPage = page + 1;
       setPage(nextPage);
@@ -154,17 +175,17 @@ export default function SwipeFeed({ selectedCategories }: Props) {
     }
 
     if (direction === 'right') {
-      // Resonate
       addResonatedLie(lieId);
       await supabase.rpc('increment_resonate', { lie_id: lieId });
     } else {
-      // Doubt
       await supabase.rpc('increment_doubt', { lie_id: lieId });
     }
-
-    // Clear counter after animation completes
-    setTimeout(() => setShowCounter(null), 800);
   };
+
+  const onCounterComplete = useCallback(() => {
+    setShowCounter(null);
+    setIsRevealing(false); // Triggers the slow fade/blur out of the cover
+  }, []);
 
   if (loading && lies.length === 0) {
     return (
@@ -177,7 +198,10 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   // Empty state: all stories exhausted
   if (lies.length === 0 && !loading) {
     return (
-      <div className="flex flex-col justify-center items-center h-[60vh] gap-6">
+      <motion.div 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 2 }}
+        className="flex flex-col justify-center items-center h-[60vh] gap-6"
+      >
         <h2 
           className="text-3xl md:text-4xl font-medium text-[var(--color-living-coral)] text-center"
           style={{ fontFamily: 'var(--font-baskerville)' }}
@@ -188,7 +212,6 @@ export default function SwipeFeed({ selectedCategories }: Props) {
           Tidak ada lagi kebohongan untuk hari ini.
         </p>
         
-        {/* Stats summary */}
         {(emptyCount > 0 || echoesCount > 0) && (
           <div className="flex gap-8 mt-4 font-mono text-xs uppercase tracking-widest">
             <span className="text-[var(--gray-400)]">empty: <span className="text-foreground">{emptyCount}</span></span>
@@ -201,26 +224,26 @@ export default function SwipeFeed({ selectedCategories }: Props) {
             localStorage.removeItem('hl_categories');
             window.location.reload();
           }}
-          className="mt-4 font-mono text-[10px] uppercase tracking-widest text-[var(--color-living-coral)] hover:text-foreground transition-colors cursor-pointer"
+          className="mt-8 font-mono text-[10px] uppercase tracking-widest text-[var(--color-living-coral)] border border-[var(--color-living-coral)] px-6 py-3 rounded-full hover:bg-[var(--color-living-coral)] hover:text-white transition-all duration-500 cursor-pointer"
         >
-          ganti kategori
+          Ganti Kategori
         </button>
-      </div>
+      </motion.div>
     );
   }
 
-  // Reverse so the first item in array is on top of the stack visually
   const stack = [...lies].reverse();
 
   return (
-    <div className="relative w-full max-w-md mx-auto flex items-center justify-center" style={{ height: 'clamp(50vh, 65vh, 80vh)' }}>
+    <div className="relative w-full max-w-md mx-auto flex items-center justify-center perspective-1000" style={{ height: 'clamp(50vh, 65vh, 80vh)' }}>
       
-      {/* Counter Overlay */}
+      {/* Counter Overlay choreographed sequence */}
       <AnimatePresence>
         {showCounter && (
           <SwipeCounter 
             count={showCounter === 'empty' ? emptyCount : echoesCount} 
             type={showCounter} 
+            onComplete={onCounterComplete}
           />
         )}
       </AnimatePresence>
@@ -232,6 +255,7 @@ export default function SwipeFeed({ selectedCategories }: Props) {
             key={lie.id}
             lie={lie}
             isTop={isTop}
+            isRevealing={isRevealing}
             isFirstCard={isFirstCard && isTop}
             onSwipe={(dir) => handleSwipe(dir, lie.id)}
             index={index}
@@ -246,29 +270,28 @@ export default function SwipeFeed({ selectedCategories }: Props) {
 interface CardProps {
   lie: Lie;
   isTop: boolean;
+  isRevealing: boolean;
   isFirstCard: boolean;
   onSwipe: (dir: 'left' | 'right') => void;
   index: number;
   total: number;
 }
 
-function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps) {
+function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
   const x = useMotionValue(0);
   const controls = useAnimation();
   
-  // Hide stack visually (Single Card Illusion)
   const rotate = useTransform(x, [-200, 200], [-10, 10]);
-  const scale = 1; // No scale down for cards underneath
-  const yOffset = 0; // No y-offset for cards underneath
+  const scale = 1;
+  const yOffset = 0;
 
-  // Background color blends (White -> Left: Black, Right: Living Coral with opacity)
+  // Background and text color transitions for swipe directions
   const backgroundColor = useTransform(
     x,
     [-150, 0, 150],
     ['rgba(0,0,0,0.9)', 'rgba(255,255,255,1)', 'rgba(252,118,106,0.9)']
   );
   
-  // Text color blends
   const textColor = useTransform(
     x,
     [-150, 0, 150],
@@ -281,19 +304,16 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
     ['rgba(255,255,255,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)']
   );
 
-  // Strikethrough for doubt (left)
   const strikeOpacity = useTransform(x, [0, -100], [0, 1]);
-  
-  // "echoes" for resonate (right)
   const resonateOpacity = useTransform(x, [0, 100], [0, 1]);
 
   const handleDragEnd = async (e: any, info: PanInfo) => {
     const threshold = 100;
     if (info.offset.x > threshold) {
-      await controls.start({ x: 500, opacity: 0, transition: { duration: 0.3 } });
+      await controls.start({ x: 500, opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } });
       onSwipe('right');
     } else if (info.offset.x < -threshold) {
-      await controls.start({ x: -500, opacity: 0, transition: { duration: 0.3 } });
+      await controls.start({ x: -500, opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } });
       onSwipe('left');
     } else {
       controls.start({ x: 0, transition: { type: 'spring', stiffness: 300, damping: 20 } });
@@ -306,7 +326,6 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
     controls.start({ opacity: 1, scale: 1, transition: { duration: 0.3 } });
   }, [controls]);
 
-  // Dynamic text sizing based on content length
   const getTextClasses = () => {
     if (content.length < 50) return 'text-2xl md:text-3xl';
     if (content.length < 150) return 'text-xl md:text-2xl';
@@ -314,9 +333,14 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
     return 'text-sm md:text-base';
   };
 
+  // The card is covered if it's NOT the top card, OR if it IS the top card but the reveal sequence is still running
+  const showCover = !isTop || isRevealing;
+  // Disable drag if it's currently revealing or not top
+  const canDrag = isTop && !isRevealing;
+
   return (
     <motion.div
-      className="absolute w-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border backdrop-blur-md"
+      className="absolute w-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border shadow-xl"
       style={{
         x,
         rotate,
@@ -329,45 +353,58 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         minHeight: '50vh',
         maxHeight: '80vh',
       }}
-      drag={isTop ? "x" : false}
+      drag={canDrag ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.9}
       onDragEnd={handleDragEnd}
       animate={controls}
       initial={{ opacity: 0, scale: 0.95 }}
     >
-      {/* Author ID at the top */}
-      <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60">
+      {/* The Cover Layer (Solid Living Coral that slowly fades out to reveal the story) */}
+      <motion.div 
+        className="absolute inset-0 z-20 pointer-events-none"
+        style={{ backgroundColor: 'var(--color-living-coral)' }}
+        initial={false}
+        animate={{
+          opacity: showCover ? 1 : 0,
+          backdropFilter: showCover ? 'blur(20px)' : 'blur(0px)',
+        }}
+        transition={{
+          duration: showCover ? 0.3 : 1.8, // Quick to cover, very slow and poetic to reveal
+          ease: 'easeInOut'
+        }}
+      />
+
+      <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60 z-10">
         <span className="font-mono text-xs tracking-[0.3em]">
           Nᵒ {lie.id.slice(0, 8)}
         </span>
       </div>
 
-      {/* Tutorial Hint */}
       {isFirstCard && (
         <motion.div 
-          className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none"
+          className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 1.5 }}
         >
           <span>&lt; Empty</span>
           <span>Echoes &gt;</span>
         </motion.div>
       )}
 
-      {/* Core Content with X Strikethrough overlaid */}
-      <div className="relative max-h-[60vh] overflow-y-auto">
+      {/* Core Content */}
+      <div className="relative max-h-[60vh] overflow-y-auto z-10 scrollbar-hide">
         <p 
-          className={`text-center leading-loose tracking-wide relative z-0 ${getTextClasses()}`}
+          className={`text-center leading-loose tracking-wide relative ${getTextClasses()}`}
           style={{ fontFamily: 'var(--font-special-elite)' }}
         >
           &ldquo;{content}&rdquo;
         </p>
 
-        {/* X Strikethrough bounded exactly to the text dimensions */}
+        {/* X Strikethrough for Doubt */}
         <motion.div 
-          className="absolute inset-0 pointer-events-none z-10"
+          className="absolute inset-0 pointer-events-none"
           style={{ opacity: strikeOpacity }}
         >
           <svg className="w-full h-full opacity-80" preserveAspectRatio="none" viewBox="0 0 100 100">
@@ -377,17 +414,16 @@ function SwipeCard({ lie, isTop, isFirstCard, onSwipe, index, total }: CardProps
         </motion.div>
       </div>
 
-      {/* Doubt Effect: "empty" */}
+      {/* Direction Hints during drag */}
       <motion.div 
-        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
+        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
         style={{ opacity: strikeOpacity }}
       >
         empty
       </motion.div>
 
-      {/* Resonate Effect: "echoes" */}
       <motion.div 
-        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
+        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
         style={{ opacity: resonateOpacity }}
       >
         echoes
