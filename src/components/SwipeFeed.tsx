@@ -298,13 +298,19 @@ interface CardProps {
 }
 
 function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
-  // Perfect Stacking (No Offset)
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  // Imperfect Stacking (Random Offset)
+  const [offset] = useState(() => ({
+    x: (Math.random() - 0.5) * 12, // -6 to 6 px
+    y: (Math.random() - 0.5) * 12,
+    r: (Math.random() - 0.5) * 6   // -3 to 3 deg
+  }));
+
+  const x = useMotionValue(offset.x);
+  const y = useMotionValue(offset.y);
   const controls = useAnimation();
   
-  // Dynamic rotation: wider range so high velocity throws cause more spin
-  const rotate = useTransform(x, [-500, 0, 500], [-30, 0, 30]);
+  // Dynamic rotation: wider range so high velocity throws cause more spin, resting at random offset
+  const rotate = useTransform(x, [-500, offset.x, 500], [-30 + offset.r, offset.r, 30 + offset.r]);
   const scale = 1;
 
   // Background and text color transitions for swipe directions
@@ -361,10 +367,10 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       });
       onSwipe('left');
     } else {
-      // Snap back with spring to perfectly centered resting place
+      // Snap back with spring to imperfect resting place
       controls.start({ 
-        x: 0, 
-        y: 0, 
+        x: offset.x, 
+        y: offset.y, 
         transition: { type: 'spring', stiffness: 400, damping: 25 } 
       });
     }
@@ -426,11 +432,11 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
                 opacity: 1
               }
             : {
-                x: [0, -60, 30, 0],
-                y: [0, -60, -20, 0],
+                x: [0, -60, 30, offset.x],
+                y: [0, -60, -20, offset.y],
                 rotateY: [-180, -180, -90, 0],
                 rotateX: [0, 10, 5, 0],
-                rotateZ: [0, -15, 10, 0],
+                rotateZ: [0, -15, 10, offset.r],
                 scale: [1, 1.05, 1.08, 1],
                 opacity: 1
               }
