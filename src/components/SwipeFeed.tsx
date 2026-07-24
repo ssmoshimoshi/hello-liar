@@ -31,8 +31,8 @@ function ParticleBurst({ color }: { color: string }) {
       x: Math.cos(angle) * distance,
       y: Math.sin(angle) * distance,
       size,
-      delay: Math.random() * (2 * 0.3), // Stagger start times
-      duration: 2 * 0.7 + Math.random() * (2 * 0.3)
+      delay: Math.random() * (3 * 0.3), // Stagger start times
+      duration: 3 * 0.7 + Math.random() * (3 * 0.3)
     };
   });
 
@@ -63,8 +63,8 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
   useEffect(() => {
     // Number stays solid for 1.2s, then turns into dust
     const timer1 = setTimeout(() => setShowParticles(true), 1200);
-    // Total sequence is 3s before triggering the card reveal
-    const timer2 = setTimeout(() => onComplete(), 3000); 
+    // Total sequence is 4.2s (1.2s wait + 3s particle duration)
+    const timer2 = setTimeout(() => onComplete(), 4200); 
     
     return () => { clearTimeout(timer1); clearTimeout(timer2); };
   }, [onComplete]);
@@ -79,7 +79,8 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
       <div className="relative flex items-center justify-center">
         {/* The Number */}
         <motion.span
-          className="text-6xl font-mono text-white mix-blend-plus-lighter"
+          className="text-6xl font-mono mix-blend-multiply"
+          style={{ color: '#4b5563' }} // gray-600 for ash effect
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
             opacity: showParticles ? 0 : 0.9, 
@@ -92,12 +93,13 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
           {count}
         </motion.span>
         
-        {showParticles && <ParticleBurst color="#ffffff" />}
+        {showParticles && <ParticleBurst color="#6b7280" />}
       </div>
       
       {/* The Label */}
       <motion.span
-        className="text-[10px] font-mono uppercase tracking-[0.5em] text-white/60 mt-6 mix-blend-plus-lighter"
+        className="text-[10px] font-mono uppercase tracking-[0.5em] mt-6 mix-blend-multiply"
+        style={{ color: '#4b5563' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: showParticles ? 0 : 0.6 }}
         transition={{ duration: 1.2, ease: 'easeInOut' }}
@@ -351,19 +353,16 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
   return (
     <motion.div
-      className="absolute w-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border-[0.5px]"
+      className="absolute w-full flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
       style={{
         x,
         rotate,
         scale,
         y: yOffset,
         zIndex: index,
-        backgroundColor,
-        borderColor,
-        color: textColor,
         minHeight: '50vh',
         maxHeight: '80vh',
-        boxShadow: 'none'
+        perspective: 1000
       }}
       drag={canDrag ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
@@ -372,75 +371,102 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       animate={controls}
       initial={{ opacity: 0, scale: 0.95 }}
     >
-      {/* The Cover Layer (Solid Living Coral that slowly fades out to reveal the story) */}
-      <motion.div 
-        className="absolute inset-0 z-20 pointer-events-none"
-        style={{ backgroundColor: 'var(--color-living-coral)' }}
+      {/* The 3D Wrapper that performs the Human Flip */}
+      <motion.div
+        className="relative w-full h-full flex flex-col items-center justify-center"
+        style={{
+          transformStyle: 'preserve-3d',
+          transformOrigin: 'bottom left'
+        }}
         initial={false}
         animate={{
-          opacity: showCover ? 1 : 0,
-          backdropFilter: showCover ? 'blur(20px)' : 'blur(0px)',
+          rotateY: showCover ? -180 : 0,
+          rotateZ: showCover ? -5 : 0,
+          scale: showCover ? 1.05 : 1,
+          opacity: 1
         }}
         transition={{
-          duration: showCover ? 0.3 : 1.8, // Quick to cover, very slow and poetic to reveal
-          ease: 'easeInOut'
+          duration: showCover ? 0.3 : 1.2,
+          ease: showCover ? 'easeOut' : [0.23, 1, 0.32, 1]
         }}
-      />
-
-      <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60 z-10">
-        <span className="font-mono text-xs tracking-[0.3em]">
-          Nᵒ {lie.id.slice(0, 8)}
-        </span>
-      </div>
-
-      {isFirstCard && (
-        <motion.div 
-          className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-        >
-          <span>&lt; Empty</span>
-          <span>Echoes &gt;</span>
-        </motion.div>
-      )}
-
-      {/* Core Content */}
-      <div className="relative max-h-[60vh] overflow-y-auto z-10 scrollbar-hide">
-        <p 
-          className={`text-center leading-loose tracking-wide relative ${getTextClasses()}`}
-          style={{ fontFamily: 'var(--font-special-elite)' }}
-        >
-          &ldquo;{content}&rdquo;
-        </p>
-
-        {/* X Strikethrough for Doubt */}
-        <motion.div 
-          className="absolute inset-0 pointer-events-none"
-          style={{ opacity: strikeOpacity }}
-        >
-          <svg className="w-full h-full opacity-80" preserveAspectRatio="none" viewBox="0 0 100 100">
-            <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-            <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-          </svg>
-        </motion.div>
-      </div>
-
-      {/* Direction Hints during drag */}
-      <motion.div 
-        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
-        style={{ opacity: strikeOpacity }}
       >
-        empty
-      </motion.div>
+        
+        {/* FRONT FACE (The Story) */}
+        <motion.div 
+          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border-[0.5px] p-8 md:p-12 flex flex-col items-center justify-center"
+          style={{ 
+            backfaceVisibility: 'hidden',
+            backgroundColor,
+            borderColor,
+            color: textColor,
+          }}
+        >
+          <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60 z-10">
+            <span className="font-mono text-xs tracking-[0.3em]">
+              Nᵒ {lie.id.slice(0, 8)}
+            </span>
+          </div>
 
-      <motion.div 
-        className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
-        style={{ opacity: resonateOpacity }}
-      >
-        echoes
-      </motion.div>
+          {isFirstCard && (
+            <motion.div 
+              className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5 }}
+            >
+              <span>&lt; Empty</span>
+              <span>Echoes &gt;</span>
+            </motion.div>
+          )}
 
+          {/* Core Content */}
+          <div className="relative max-h-[60vh] overflow-y-auto z-10 scrollbar-hide">
+            <p 
+              className={`text-center leading-loose tracking-wide relative ${getTextClasses()}`}
+              style={{ fontFamily: 'var(--font-special-elite)' }}
+            >
+              &ldquo;{content}&rdquo;
+            </p>
+
+            {/* X Strikethrough for Doubt */}
+            <motion.div 
+              className="absolute inset-0 pointer-events-none"
+              style={{ opacity: strikeOpacity }}
+            >
+              <svg className="w-full h-full opacity-80" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              </svg>
+            </motion.div>
+          </div>
+
+          {/* Direction Hints during drag */}
+          <motion.div 
+            className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
+            style={{ opacity: strikeOpacity }}
+          >
+            empty
+          </motion.div>
+
+          <motion.div 
+            className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
+            style={{ opacity: resonateOpacity }}
+          >
+            echoes
+          </motion.div>
+        </motion.div>
+
+        {/* BACK FACE (Living Coral Cover) */}
+        <motion.div 
+          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden pointer-events-none"
+          style={{ 
+            backgroundColor: 'var(--color-living-coral)',
+            backfaceVisibility: 'hidden',
+            rotateY: 180
+          }}
+        />
+        
+      </motion.div>
     </motion.div>
   );
 }
