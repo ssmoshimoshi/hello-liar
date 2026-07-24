@@ -72,8 +72,8 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
   return (
     <motion.div
       className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none"
-      initial={{ opacity: 0, scaleX: -1 }}
-      animate={{ opacity: 1, scaleX: -1 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 1 } }}
     >
       <div className="relative flex items-center justify-center">
@@ -506,7 +506,9 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
           }}
         >
           {isTop && showCounter && (
-            <SwipeCounter count={count} type={showCounter} onComplete={onCounterComplete} />
+            <div className="absolute inset-0 w-full h-full" style={{ transform: 'scaleX(-1)' }}>
+              <SwipeCounter count={count} type={showCounter} onComplete={onCounterComplete} />
+            </div>
           )}
         </motion.div>
         
