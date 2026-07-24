@@ -79,7 +79,7 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
       <div className="relative flex items-center justify-center">
         {/* The Number */}
         <motion.span
-          className="text-[13px] font-mono tracking-[0.5em] mix-blend-multiply"
+          className="text-4xl font-mono tracking-[0.3em] mix-blend-multiply"
           style={{ color: '#8c312f' }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
@@ -98,7 +98,7 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
       
       {/* The Label */}
       <motion.span
-        className="text-[10px] font-mono uppercase tracking-[0.5em] mt-2 mix-blend-multiply"
+        className="text-xs font-mono uppercase tracking-[0.5em] mt-4 mix-blend-multiply"
         style={{ color: '#8c312f' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: showParticles ? 0 : 0.6 }}
