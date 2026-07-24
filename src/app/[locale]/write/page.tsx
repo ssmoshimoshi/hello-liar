@@ -209,7 +209,7 @@ export default function WritePage() {
   const isDark = charCount >= 30;
 
   return (
-    <div className={`fixed inset-0 text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
+    <div className={`fixed top-0 left-0 w-full h-[100dvh] text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
       
       {/* Shockwave Effect — originates from exact click coordinates */}
       {(phase === 'detonation' || phase === 'void') && (
@@ -306,7 +306,7 @@ export default function WritePage() {
       </div>
 
       {/* Editorial header with random letter reveal */}
-      <div ref={headerRef} className="absolute top-12 left-1/2 -translate-x-1/2 text-center z-10 w-full px-4">
+      <div ref={headerRef} className="absolute top-6 md:top-12 left-1/2 -translate-x-1/2 text-center z-10 w-full px-4 pointer-events-none">
         <p 
           className="text-lg md:text-xl font-medium tracking-widest"
           style={{ fontFamily: 'var(--font-baskerville)', color: 'var(--color-living-coral)' }}
@@ -326,7 +326,7 @@ export default function WritePage() {
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="w-full max-w-4xl flex flex-col items-center justify-center z-10"
+        className="w-full h-full max-w-4xl flex flex-col items-center justify-center z-10 pt-16 pb-4 md:pb-8"
       >
         {errorMsg && (
           <div className="absolute top-24 px-4 py-2 border border-white text-white text-xs font-mono tracking-widest bg-white/10 backdrop-blur-sm rounded-full">
@@ -334,13 +334,13 @@ export default function WritePage() {
           </div>
         )}
         
-        <div className="relative w-full" style={{ minHeight: '40vh' }}>
+        <div className="relative w-full flex-1 flex flex-col justify-center min-h-[30dvh]">
           <textarea
             ref={textareaRef}
             value={content}
             onChange={handleChange}
             placeholder={t('writePlaceholder')}
-            className={`absolute inset-0 w-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 placeholder:text-white/30 transition-opacity duration-300 z-10 ${
+            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 placeholder:text-white/30 transition-opacity duration-300 z-10 ${
               phase !== 'writing' ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
             style={{ 
@@ -375,7 +375,7 @@ export default function WritePage() {
         </div>
         
         {/* Bottom Actions */}
-        <div className={`mt-12 transition-all duration-700 z-10 ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+        <div className={`mt-6 md:mt-12 shrink-0 transition-all duration-700 z-10 ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
           <button
             type="submit"
             onPointerDown={(e) => {
