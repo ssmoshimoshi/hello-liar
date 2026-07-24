@@ -64,33 +64,36 @@ export default function VaultPage() {
       <div className="max-w-4xl mx-auto">
         
         {/* Header Section */}
-        <header className="mb-12 text-center md:text-left">
-          <h1 className="text-4xl md:text-6xl font-[var(--font-playfair)] font-black tracking-tight mb-4">
+        <header className="mb-16 text-center md:text-left">
+          <h1 
+            className="text-5xl md:text-7xl font-medium tracking-tight mb-6 text-[var(--color-living-coral)]"
+            style={{ fontFamily: 'var(--font-baskerville)' }}
+          >
             {t('vaultTitle')}
           </h1>
-          <p className="text-gray-400 font-mono text-xs uppercase tracking-widest leading-relaxed max-w-xl mx-auto md:mx-0">
+          <p className="text-[var(--gray-400)] font-mono text-xs uppercase tracking-widest leading-relaxed max-w-xl mx-auto md:mx-0">
             {t('vaultSubtitle')}
           </p>
         </header>
 
         {/* Tabs */}
-        <div className="flex justify-center md:justify-start gap-8 border-b border-white/10 mb-12">
+        <div className="flex justify-center md:justify-start gap-12 border-b border-[var(--gray-200)] mb-12">
           <button
             onClick={() => setActiveTab('resonated')}
-            className={`pb-4 font-mono text-sm uppercase tracking-widest transition-colors ${
+            className={`pb-4 font-mono text-sm uppercase tracking-[0.2em] transition-colors border-b-2 ${
               activeTab === 'resonated' 
-                ? 'border-b-2 border-primary text-foreground' 
-                : 'text-gray-500 hover:text-gray-300'
+                ? 'border-foreground text-foreground font-bold' 
+                : 'border-transparent text-[var(--gray-500)] hover:text-foreground'
             }`}
           >
             {t('vaultResonated')}
           </button>
           <button
             onClick={() => setActiveTab('written')}
-            className={`pb-4 font-mono text-sm uppercase tracking-widest transition-colors ${
+            className={`pb-4 font-mono text-sm uppercase tracking-[0.2em] transition-colors border-b-2 ${
               activeTab === 'written' 
-                ? 'border-b-2 border-primary text-foreground' 
-                : 'text-gray-500 hover:text-gray-300'
+                ? 'border-foreground text-foreground font-bold' 
+                : 'border-transparent text-[var(--gray-500)] hover:text-foreground'
             }`}
           >
             {t('vaultWritten')}
@@ -101,39 +104,46 @@ export default function VaultPage() {
         <main>
           {loading ? (
             <div className="flex justify-center py-20 opacity-50">
-              <div className="animate-pulse font-mono text-sm tracking-widest uppercase">Loading...</div>
+              <div className="animate-pulse font-mono text-sm tracking-widest uppercase">Mengingat...</div>
             </div>
           ) : lies.length === 0 ? (
-            <div className="text-center py-32 border border-white/10 border-dashed rounded-lg">
-              <p className="font-mono text-gray-500 text-sm uppercase tracking-widest">
-                {activeTab === 'written' ? t('vaultEmptyWritten') : t('vaultEmptyResonated')}
+            <div className="text-center py-32 border border-[var(--gray-300)] rounded-none">
+              <p className="font-mono text-[var(--gray-500)] text-sm uppercase tracking-widest leading-loose">
+                {activeTab === 'written' 
+                  ? 'Lemari arsip ini belum menyimpan rahasia apapun.' 
+                  : 'Belum ada gema yang menyentuh ruang ini.'}
               </p>
             </div>
           ) : (
-            <div className="grid gap-8">
+            <div className="grid gap-6">
               {lies.map((lie) => {
                 const content = locale === 'en' ? lie.content_en : (lie as any).content_id || lie.content_en;
                 
                 return (
                   <div 
                     key={lie.id} 
-                    className="p-8 border border-white/10 rounded-lg hover:border-white/20 transition-colors bg-white/5"
+                    className="p-8 md:p-12 border-b border-[var(--gray-200)] hover:border-[var(--gray-500)] transition-colors bg-background flex flex-col justify-between"
                   >
-                    <p className={`font-discipline text-[var(--foreground)] ${
-                      content.length < 50 ? 'text-4xl' : 
-                      content.length < 150 ? 'text-3xl' : 'text-2xl'
-                    }`}>
+                    <p 
+                      className={`text-foreground leading-loose tracking-wide ${
+                        content.length < 50 ? 'text-2xl md:text-3xl' : 
+                        content.length < 150 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl'
+                      }`}
+                      style={{ fontFamily: 'var(--font-special-elite)' }}
+                    >
                       &ldquo;{content}&rdquo;
                     </p>
                     
-                    <div className="mt-8 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-gray-500">
-                      <span>{new Date(lie.created_at).toLocaleDateString()}</span>
-                      <div className="flex gap-4">
-                        <span className="flex items-center gap-1">
-                          <span className="text-primary">♥</span> {lie.resonate_count}
+                    <div className="mt-12 pt-6 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-[var(--gray-400)] border-t border-[var(--gray-200)]">
+                      <span>Nᵒ {lie.id.slice(0, 8)}</span>
+                      <div className="flex gap-6">
+                        <span className="flex items-center gap-2">
+                          <span className="text-foreground">ECHOES</span> 
+                          <span className="text-[var(--color-living-coral)] font-bold">{lie.resonate_count}</span>
                         </span>
-                        <span className="flex items-center gap-1">
-                          <span className="text-white">×</span> {lie.doubt_count}
+                        <span className="flex items-center gap-2">
+                          <span className="text-foreground">EMPTY</span> 
+                          <span className="font-bold">{lie.doubt_count}</span>
                         </span>
                       </div>
                     </div>
