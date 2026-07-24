@@ -258,8 +258,16 @@ export default function SwipeFeed({ selectedCategories }: Props) {
   return (
     <div className="relative w-full max-w-md mx-auto flex items-center justify-center perspective-1000" style={{ height: 'clamp(50vh, 65vh, 80vh)' }}>
       
-      {/* Counter Overlay is now handled internally by SwipeCard's back face */}
-
+      {/* Detached Counter Overlay */}
+      <AnimatePresence>
+        {showCounter && (
+          <SwipeCounter 
+            count={showCounter === 'empty' ? emptyCount : echoesCount} 
+            type={showCounter} 
+            onComplete={onCounterComplete}
+          />
+        )}
+      </AnimatePresence>
       {stack.map((lie, index) => {
         const isTop = index === stack.length - 1;
         return (
@@ -272,9 +280,6 @@ export default function SwipeFeed({ selectedCategories }: Props) {
             onSwipe={(dir) => handleSwipe(dir, lie.id)}
             index={index}
             total={stack.length}
-            showCounter={isTop ? showCounter : null}
-            count={showCounter === 'empty' ? emptyCount : echoesCount}
-            onCounterComplete={onCounterComplete}
           />
         );
       })}
@@ -290,12 +295,9 @@ interface CardProps {
   onSwipe: (dir: 'left' | 'right') => void;
   index: number;
   total: number;
-  showCounter: 'empty' | 'echoes' | null;
-  count: number;
-  onCounterComplete: () => void;
 }
 
-function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total, showCounter, count, onCounterComplete }: CardProps) {
+function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
   // Perfect Stacking (No Offset)
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -504,13 +506,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
             rotateY: 180,
             pointerEvents: 'none'
           }}
-        >
-          {isTop && showCounter && (
-            <div className="absolute inset-0 w-full h-full" style={{ transform: 'scaleX(-1)' }}>
-              <SwipeCounter count={count} type={showCounter} onComplete={onCounterComplete} />
-            </div>
-          )}
-        </motion.div>
+        />
         
       </motion.div>
     </motion.div>
