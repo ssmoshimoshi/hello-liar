@@ -19,8 +19,14 @@ export default function WritePage() {
   const [charCount, setCharCount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  // 'writing' -> 'detonation' -> 'detonation-simple' -> 'void' -> 'forgiven'
-  const [phase, setPhase] = useState<'writing' | 'detonation' | 'detonation-simple' | 'void' | 'forgiven'>('writing');
+  // 'writing' -> 'detonating' -> 'void' -> 'forgiven'
+  const [phase, setPhase] = useState<'writing' | 'detonating' | 'void' | 'forgiven'>('writing');
+
+  // Hold-to-Release Interaction Logic
+  const holdStartTimeRef = useRef<number>(0);
+  const holdRafRef = useRef<number | null>(null);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const HOLD_DURATION = 1500; // ms
 
   // Dynamic Placeholder Logic
   const promptsId = [
@@ -82,162 +88,72 @@ export default function WritePage() {
     if (errorMsg) setErrorMsg(null);
   };
 
-  // === PHASE 1: Implosion (anticipation - characters pulled toward button) ===
-  const applyImplosion = useCallback((epicenterX: number, epicenterY: number) => {
-    const chars = document.querySelectorAll('.shatter-char, .header-char');
-    chars.forEach((el) => {
-      const htmlEl = el as HTMLElement;
-      const rect = htmlEl.getBoundingClientRect();
-      const elCenterX = rect.left + rect.width / 2;
-      const elCenterY = rect.top + rect.height / 2;
-      
-      const dx = epicenterX - elCenterX; // reversed: toward epicenter
-      const dy = epicenterY - elCenterY;
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      
-      // Gentle pull toward button (max 15px)
-      const pullStrength = Math.min(15, 600 / dist);
-      const pullX = (dx / dist) * pullStrength;
-      const pullY = (dy / dist) * pullStrength;
-      
-      htmlEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-      htmlEl.style.transform = `translate(${pullX}px, ${pullY}px) scale(0.97)`;
-    });
-  }, []);
+  // === BREATHE & DISSOLVE LOGIC ===
+  const executeRelease = async () => {
+    setIsSubmitting(true);
+    setPhase('detonating');
 
-  // === PHASE 2: Distance-delayed scatter (characters break when wave reaches them) ===
-  const WAVE_SPEED = 800; // pixels per second - matches the visual ring expansion
-  
-  const applyShatterPhysics = useCallback((epicenterX: number, epicenterY: number) => {
-    const chars = document.querySelectorAll('.shatter-char, .header-char');
-    
-    // Find max distance for timing calculations
-    let maxDist = 0;
-    const charData: { el: HTMLElement; dist: number; dx: number; dy: number }[] = [];
-    
-    chars.forEach((el) => {
-      const htmlEl = el as HTMLElement;
-      const rect = htmlEl.getBoundingClientRect();
-      const elCenterX = rect.left + rect.width / 2;
-      const elCenterY = rect.top + rect.height / 2;
-      const dx = elCenterX - epicenterX;
-      const dy = elCenterY - epicenterY;
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      if (dist > maxDist) maxDist = dist;
-      charData.push({ el: htmlEl, dist, dx, dy });
-    });
-    
-    charData.forEach(({ el, dist, dx, dy }) => {
-      // Delay = time for wave to reach this character
-      const delay = (dist / WAVE_SPEED) * 1000; // ms
-      
-      const strength = Math.max(150, 4200 / (dist / 100));
-      const pushX = (dx / dist) * strength + (Math.random() * 200 - 100);
-      const pushY = (dy / dist) * strength + (Math.random() * 200 - 100);
-      const rotZ = (Math.random() - 0.5) * 2000;
-      
-      // Each character waits for the wave to arrive, then shatters
-      setTimeout(() => {
-        el.style.transition = 'transform 1.4s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.8s ease-out';
-        el.style.transform = `translate(${pushX}px, ${pushY}px) rotateZ(${rotZ}deg) scale(${Math.random() * 0.5 + 0.5})`;
-        el.style.opacity = '0';
-      }, delay);
-    });
-
-    // Button shatters immediately (it's at the epicenter)
+    // Fade out header and button smoothly
+    if (headerRef.current) {
+      headerRef.current.style.transition = 'opacity 2s ease';
+      headerRef.current.style.opacity = '0';
+    }
     const btn = formRef.current?.querySelector('button');
     if (btn) {
-      btn.style.transition = 'transform 1.0s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.5s';
-      btn.style.transform = 'translateY(100px) scale(0)';
+      btn.style.transition = 'opacity 1s ease';
       btn.style.opacity = '0';
     }
-  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return;
-    
-    if (content.length < 10) {
-      setErrorMsg(locale === 'en' ? 'Confession is too short.' : 'Cerita terlalu pendek.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    // Accessibility: Reduced Motion Check
-    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    if (isReduced) {
-      setPhase('detonation-simple');
-      
-      // Gentle fade out for header and button instead of physics
-      if (headerRef.current) {
-        headerRef.current.style.transition = 'opacity 1.5s ease';
-        headerRef.current.style.opacity = '0';
-      }
-      const btn = formRef.current?.querySelector('button');
-      if (btn) {
-        btn.style.transition = 'opacity 1s ease';
-        btn.style.opacity = '0';
-      }
-
-      const res = await submitLie(content, content);
-      
-      if (res.success && res.id) {
-        setTimeout(() => setPhase('void'), 1500); 
-        setTimeout(() => setPhase('forgiven'), 3000);
-        setTimeout(() => router.push(`/${locale}/read/${res.id}`), 6000);
-      } else {
-        setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
-        setIsSubmitting(false);
-        setPhase('writing');
-        if (headerRef.current) headerRef.current.style.opacity = '1';
-        if (btn) btn.style.opacity = '1';
-      }
-      return;
-    }
-
-    // Normal Cinematic Flow
-    
-    // Lock epicenter strictly to the button's geometric center
-    const btnRect = formRef.current?.querySelector('button')?.getBoundingClientRect();
-    const ex = btnRect ? btnRect.left + btnRect.width / 2 : clickPosRef.current.x;
-    const ey = btnRect ? btnRect.top + btnRect.height / 2 : clickPosRef.current.y;
-    clickPosRef.current = { x: ex, y: ey };
-
-    // === PHASE 1: Implosion (300ms anticipation) ===
-    setPhase('detonation');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        applyImplosion(ex, ey);
-      });
-    });
-
-    // === PHASE 2: After 300ms, trigger the actual shockwave ===
-    setTimeout(() => {
-      applyShatterPhysics(ex, ey);
-    }, 350);
-    
     const res = await submitLie(content, content);
     
     if (res.success && res.id) {
-      // Catharsis sequence timings (synced with wave propagation)
-      // Wave takes ~2s to cross the full screen at 800px/s
-      setTimeout(() => setPhase('void'), 2500); // After wave has swept everything
-      setTimeout(() => setPhase('forgiven'), 4000); // Voice appears from the void
+      setTimeout(() => setPhase('void'), 2500); // 2.5s to let the blur fade finish
+      setTimeout(() => setPhase('forgiven'), 4000); 
       
       setTimeout(() => {
         router.push(`/${locale}/read/${res.id}`);
-      }, 8000); // Extended wait for reading
+      }, 8000); 
     } else {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
       setPhase('writing');
-      
-      // Reset button if error
-      const btn = formRef.current?.querySelector('button');
-      if (btn) { btn.style.transform = ''; btn.style.opacity = ''; }
+      setHoldProgress(0);
+      if (headerRef.current) headerRef.current.style.opacity = '1';
+      if (btn) btn.style.opacity = '1';
     }
+  };
+
+  const startHold = useCallback((e: React.PointerEvent) => {
+    if (isSubmitting || content.length < 10) return;
+    
+    // Capture exact position for the expanding void
+    clickPosRef.current = { x: e.clientX, y: e.clientY };
+    holdStartTimeRef.current = performance.now();
+    
+    const animateHold = (time: number) => {
+      const elapsed = time - holdStartTimeRef.current;
+      const progress = Math.min(elapsed / HOLD_DURATION, 1);
+      setHoldProgress(progress);
+      
+      if (progress < 1) {
+        holdRafRef.current = requestAnimationFrame(animateHold);
+      } else {
+        // Hold complete -> Trigger release!
+        executeRelease();
+      }
+    };
+    holdRafRef.current = requestAnimationFrame(animateHold);
+  }, [isSubmitting, content.length]);
+
+  const cancelHold = useCallback(() => {
+    if (holdProgress >= 1 || isSubmitting) return; // Already triggered
+    if (holdRafRef.current) cancelAnimationFrame(holdRafRef.current);
+    
+    setHoldProgress(0);
+  }, [holdProgress, isSubmitting]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent accidental submits, rely on pointer hold
   };
 
   const isDark = charCount >= 30;
@@ -245,82 +161,22 @@ export default function WritePage() {
   return (
     <div className={`fixed top-0 left-0 w-full h-[100dvh] text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
       
-      {/* Shockwave Effect — originates from exact click coordinates */}
-      {(phase === 'detonation' || phase === 'void') && (
-        <>
-          <style>{`
-            @keyframes sw-primary {
-              0%   { transform: scale(0);   opacity: 1; border-width: 2px; filter: blur(7px); }
-              15%  { opacity: 1; }
-              100% { transform: scale(500); opacity: 0; border-width: 0px; filter: blur(0px); }
-            }
-            @keyframes sw-secondary {
-              0%   { transform: scale(0);   opacity: 0; filter: blur(2px); }
-              8%   { opacity: 0.5; }
-              100% { transform: scale(90); opacity: 0; filter: blur(20px); }
-            }
-            @keyframes dark-cleave {
-              0%   { clip-path: circle(0px   at var(--ex) var(--ey)); }
-              100% { clip-path: circle(200vmax at var(--ex) var(--ey)); }
-            }
-          `}</style>
-
-          {/* Void layer that follows behind the wave (synced to wave speed) */}
-          <div
-            className="fixed inset-0 z-[198] pointer-events-none"
-            style={{
-              backgroundColor: '#ffffff',
-              '--ex': `${clickPosRef.current.x}px`,
-              '--ey': `${clickPosRef.current.y}px`,
-              animation: 'dark-cleave 2.0s cubic-bezier(0.05, 0.95, 0.2, 1) both',
-              animationDelay: '350ms',
-            } as React.CSSProperties}
-          />
-
-          {/* Primary ring - starts after implosion phase (350ms delay) */}
-          <div
-            className="fixed pointer-events-none rounded-full z-[201]"
-            style={{
-              top: `${clickPosRef.current.y}px`,
-              left: `${clickPosRef.current.x}px`,
-              width: '4px',
-              height: '4px',
-              marginTop: '-2px',
-              marginLeft: '-2px',
-              borderStyle: 'solid',
-              borderColor: '#000000',
-              animation: 'sw-primary 2.0s cubic-bezier(0.05, 0.95, 0.2, 1) both',
-              animationDelay: '350ms',
-            }}
-          />
-
-          {/* Secondary ring - the heavy dust wave */}
-          <div
-            className="fixed pointer-events-none rounded-full z-[200]"
-            style={{
-              top: `${clickPosRef.current.y}px`,
-              left: `${clickPosRef.current.x}px`,
-              width: '4px',
-              height: '4px',
-              marginTop: '-2px',
-              marginLeft: '-2px',
-              borderStyle: 'solid',
-              borderColor: '#4f4f4f',
-              borderWidth: '17px',
-              animation: 'sw-secondary 1.5s cubic-bezier(0.25, 0.8, 0.2, 1) both',
-              animationDelay: '1100ms',
-            }}
-          />
-        </>
-      )}
-
-      {/* Reduced Motion Simple Void Transition */}
-      {(phase === 'detonation-simple' || (phase === 'void' && typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) && (
-        <div
-          className="fixed inset-0 z-[198] bg-white pointer-events-none transition-opacity duration-[1500ms] ease-in-out"
-          style={{ opacity: phase === 'detonation-simple' ? 0 : 1 }}
-        />
-      )}
+      {/* Void Expansion (Breathe & Dissolve) */}
+      <div
+        className="fixed pointer-events-none rounded-full z-[198]"
+        style={{
+          backgroundColor: '#ffffff',
+          top: `${clickPosRef.current.y}px`,
+          left: `${clickPosRef.current.x}px`,
+          width: '2px',
+          height: '2px',
+          marginTop: '-1px',
+          marginLeft: '-1px',
+          transform: `scale(${phase !== 'writing' ? 4000 : 0})`, // Scale massive enough to cover any screen
+          transition: 'transform 2.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          opacity: 1,
+        }}
+      />
 
       {/* Dynamic Voronoi Void */}
       <VoronoiBackground charCount={charCount} />
@@ -387,62 +243,54 @@ export default function WritePage() {
             </div>
           )}
 
+          {/* Blur Fade TextArea */}
           <textarea
             ref={textareaRef}
             value={content}
             onChange={handleChange}
-            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 transition-opacity duration-300 z-10 ${
-              phase !== 'writing' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 z-10 ${
+              phase !== 'writing' ? 'opacity-0 blur-xl scale-95 pointer-events-none' : 'opacity-100 blur-0 scale-100'
             }`}
             style={{ 
               fontFamily: 'var(--font-special-elite)',
               color: '#ffffff',
               textShadow: content.length > 0 ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
-              transition: phase === 'detonation-simple' ? 'opacity 1.5s ease' : 'opacity 0.3s'
+              transition: phase !== 'writing' 
+                ? 'opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1), filter 2.5s cubic-bezier(0.4, 0, 0.2, 1), transform 2.5s cubic-bezier(0.4, 0, 0.2, 1)' 
+                : 'opacity 0.3s'
             }}
             minLength={10}
             maxLength={500}
             required
           />
-          
-          {/* The Bait and Switch: renders individual spans for shattering */}
-          {(phase === 'detonation' || phase === 'void' || phase === 'forgiven') && (
-            <div 
-              className="absolute inset-0 w-full text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center pointer-events-none z-20"
-              style={{ 
-                fontFamily: 'var(--font-special-elite)', 
-                color: '#ffffff', 
-                whiteSpace: 'pre-wrap',
-                textShadow: content.length > 0 ? '0 2px 10px rgba(0,0,0,0.1)' : 'none'
-              }}
-            >
-              {content.split('').map((char, i) => (
-                <span 
-                  key={i} 
-                  className={char === ' ' || char === '\n' ? "inline-block" : "shatter-char inline-block"}
-                  style={{
-                    willChange: char === ' ' || char === '\n' ? 'auto' : 'transform, opacity'
-                  }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
         
         {/* Bottom Actions */}
         <div className={`mt-6 md:mt-12 shrink-0 transition-all duration-700 z-10 ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
           <button
-            type="submit"
-            onPointerDown={(e) => {
-              // Capture exact finger/cursor position BEFORE form submit fires
-              clickPosRef.current = { x: e.clientX, y: e.clientY };
-            }}
+            type="button"
+            onPointerDown={startHold}
+            onPointerUp={cancelHold}
+            onPointerLeave={cancelHold}
+            onPointerCancel={cancelHold}
             disabled={isSubmitting || content.length < 10}
-            className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold text-white/60 hover:text-[var(--color-living-coral)] active:text-[var(--color-living-coral)] transition-all duration-300 disabled:opacity-0 cursor-pointer"
+            className="relative px-8 py-4 rounded-full overflow-hidden text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold text-white/60 transition-all duration-300 disabled:opacity-0 cursor-pointer select-none ring-1 ring-white/10 hover:ring-white/30"
+            style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
           >
-            {isSubmitting ? '...' : t('releaseBtn')}
+            {/* Liquid Progress Ring */}
+            <div 
+              className="absolute inset-0 bg-white origin-center"
+              style={{
+                transform: `scale(${holdProgress})`,
+                opacity: holdProgress > 0 ? 0.3 : 0,
+                transition: holdProgress === 0 ? 'transform 0.5s ease-out, opacity 0.5s' : 'none',
+                borderRadius: '50%'
+              }}
+            />
+            {/* Inner text */}
+            <span className="relative z-10 transition-colors duration-300" style={{ color: holdProgress > 0.5 ? 'white' : 'inherit' }}>
+              {isSubmitting ? '...' : (holdProgress > 0 ? t('releaseBtn') + '...' : t('releaseBtn'))}
+            </span>
           </button>
         </div>
       </form>
