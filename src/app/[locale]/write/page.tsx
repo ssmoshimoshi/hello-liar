@@ -62,8 +62,11 @@ export default function WritePage() {
       <VoronoiBackground charCount={charCount} />
 
       {/* Editorial header (Subtle) */}
-      <div className={`absolute top-12 left-1/2 -translate-x-1/2 text-center transition-all duration-1000 z-10 ${isReleasing ? 'opacity-0' : 'opacity-60'}`}>
-        <p className="text-[10px] font-sans uppercase tracking-[0.4em] font-bold">
+      <div className={`absolute top-12 left-1/2 -translate-x-1/2 text-center transition-all duration-1000 z-10 w-full px-4 ${isReleasing ? 'opacity-0' : 'opacity-60'}`}>
+        <p 
+          className="text-lg md:text-xl font-medium tracking-widest text-[var(--color-living-coral)] opacity-80 mix-blend-plus-lighter"
+          style={{ fontFamily: 'var(--font-baskerville)' }}
+        >
           {locale === 'en' ? 'The Void is Listening' : 'Kehampaan Mendengarkan'}
         </p>
       </div>
@@ -75,7 +78,7 @@ export default function WritePage() {
         }`}
       >
         {errorMsg && (
-          <div className="absolute top-24 px-4 py-2 border border-white text-white text-xs font-sans tracking-widest bg-white/10 backdrop-blur-sm rounded-full">
+          <div className="absolute top-24 px-4 py-2 border border-white text-white text-xs font-mono tracking-widest bg-white/10 backdrop-blur-sm rounded-full">
             {errorMsg}
           </div>
         )}
@@ -85,8 +88,9 @@ export default function WritePage() {
           value={content}
           onChange={handleChange}
           placeholder={t('writePlaceholder')}
-          className="w-full bg-transparent border-none outline-none resize-none text-3xl md:text-4xl lg:text-5xl font-discipline leading-tight text-center focus:ring-0 placeholder:text-white/40 transition-all duration-700 relative z-10"
+          className="w-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 placeholder:text-white/30 transition-all duration-700 relative z-10"
           style={{ 
+            fontFamily: 'var(--font-special-elite)',
             minHeight: '40vh',
             color: '#ffffff',
             textShadow: content.length > 0 ? '0 2px 10px rgba(0,0,0,0.1)' : 'none'
@@ -101,12 +105,12 @@ export default function WritePage() {
           <button 
             type="submit" 
             disabled={isSubmitting || content.length < 10}
-            className="group relative flex items-center justify-center w-32 h-32 md:w-40 md:h-40 rounded-full border border-white/20 hover:border-white/50 transition-all duration-500 disabled:opacity-0 disabled:scale-75"
+            className="group relative flex items-center justify-center w-32 h-32 md:w-40 md:h-40 rounded-full border border-white/20 hover:border-white/50 transition-all duration-500 disabled:opacity-0 disabled:scale-75 cursor-pointer"
           >
             {/* Breathing pulse ring */}
             <div className="absolute inset-0 rounded-full border border-white/10 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
             
-            <span className="text-[10px] md:text-xs font-sans uppercase tracking-[0.3em] font-bold z-10 group-hover:scale-110 transition-transform duration-300">
+            <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold z-10 group-hover:scale-110 transition-transform duration-300">
               {isSubmitting ? '...' : t('releaseBtn')}
             </span>
           </button>
