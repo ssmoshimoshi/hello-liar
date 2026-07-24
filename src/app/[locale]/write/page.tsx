@@ -266,7 +266,7 @@ export default function WritePage() {
         </div>
         
         {/* Bottom Actions */}
-        <div className={`mt-6 md:mt-12 shrink-0 transition-all duration-700 z-10 ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+        <div className={`mt-6 md:mt-12 shrink-0 transition-all duration-700 z-10 flex justify-center ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
           <button
             type="button"
             onPointerDown={startHold}
@@ -274,21 +274,28 @@ export default function WritePage() {
             onPointerLeave={cancelHold}
             onPointerCancel={cancelHold}
             disabled={isSubmitting || content.length < 10}
-            className="relative px-8 py-4 rounded-full overflow-hidden text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold text-white/60 transition-all duration-300 disabled:opacity-0 cursor-pointer select-none ring-1 ring-white/10 hover:ring-white/30"
+            className="relative px-12 py-8 text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] font-bold text-white/50 transition-all duration-300 disabled:opacity-0 cursor-pointer select-none hover:text-white"
             style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
           >
-            {/* Liquid Progress Ring */}
+            {/* Blurry Aura Progress (Misty Glow) */}
             <div 
-              className="absolute inset-0 bg-white origin-center"
+              className="absolute inset-0 bg-white origin-center rounded-full pointer-events-none"
               style={{
-                transform: `scale(${holdProgress})`,
-                opacity: holdProgress > 0 ? 0.3 : 0,
+                transform: `scale(${holdProgress * 1.5})`, // Grows to envelop the text
+                opacity: holdProgress > 0 ? holdProgress * 0.5 : 0,
+                filter: 'blur(30px)',
                 transition: holdProgress === 0 ? 'transform 0.5s ease-out, opacity 0.5s' : 'none',
-                borderRadius: '50%'
               }}
             />
             {/* Inner text */}
-            <span className="relative z-10 transition-colors duration-300" style={{ color: holdProgress > 0.5 ? 'white' : 'inherit' }}>
+            <span 
+              className="relative z-10 transition-all duration-300" 
+              style={{ 
+                color: holdProgress > 0.1 ? 'white' : 'inherit',
+                letterSpacing: holdProgress > 0 ? '0.6em' : '0.4em', // Slight expansion of text while holding
+                textShadow: holdProgress > 0 ? `0 0 ${holdProgress * 15}px rgba(255,255,255,0.8)` : 'none'
+              }}
+            >
               {isSubmitting ? '...' : (holdProgress > 0 ? t('releaseBtn') + '...' : t('releaseBtn'))}
             </span>
           </button>
