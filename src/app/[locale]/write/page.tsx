@@ -48,8 +48,8 @@ export default function WritePage() {
     if (errorMsg) setErrorMsg(null);
   };
 
-  const applyShatterPhysics = useCallback((epicenterX: number, epicenterY: number) => {
-    // Scatter every individual character
+  // === PHASE 1: Implosion (anticipation - characters pulled toward button) ===
+  const applyImplosion = useCallback((epicenterX: number, epicenterY: number) => {
     const chars = document.querySelectorAll('.shatter-char, .header-char');
     chars.forEach((el) => {
       const htmlEl = el as HTMLElement;
@@ -57,26 +57,63 @@ export default function WritePage() {
       const elCenterX = rect.left + rect.width / 2;
       const elCenterY = rect.top + rect.height / 2;
       
+      const dx = epicenterX - elCenterX; // reversed: toward epicenter
+      const dy = epicenterY - elCenterY;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      
+      // Gentle pull toward button (max 15px)
+      const pullStrength = Math.min(15, 600 / dist);
+      const pullX = (dx / dist) * pullStrength;
+      const pullY = (dy / dist) * pullStrength;
+      
+      htmlEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      htmlEl.style.transform = `translate(${pullX}px, ${pullY}px) scale(0.97)`;
+    });
+  }, []);
+
+  // === PHASE 2: Distance-delayed scatter (characters break when wave reaches them) ===
+  const WAVE_SPEED = 800; // pixels per second - matches the visual ring expansion
+  
+  const applyShatterPhysics = useCallback((epicenterX: number, epicenterY: number) => {
+    const chars = document.querySelectorAll('.shatter-char, .header-char');
+    
+    // Find max distance for timing calculations
+    let maxDist = 0;
+    const charData: { el: HTMLElement; dist: number; dx: number; dy: number }[] = [];
+    
+    chars.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const rect = htmlEl.getBoundingClientRect();
+      const elCenterX = rect.left + rect.width / 2;
+      const elCenterY = rect.top + rect.height / 2;
       const dx = elCenterX - epicenterX;
       const dy = elCenterY - epicenterY;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      if (dist > maxDist) maxDist = dist;
+      charData.push({ el: htmlEl, dist, dx, dy });
+    });
+    
+    charData.forEach(({ el, dist, dx, dy }) => {
+      // Delay = time for wave to reach this character
+      const delay = (dist / WAVE_SPEED) * 1000; // ms
       
-      // Inverse distance law for push strength using user config
-      const strength = Math.max(150, 4200 / (dist / 100)); // scatterStrength: 4200
+      const strength = Math.max(150, 4200 / (dist / 100));
       const pushX = (dx / dist) * strength + (Math.random() * 200 - 100);
       const pushY = (dy / dist) * strength + (Math.random() * 200 - 100);
-      const rotZ = (Math.random() - 0.5) * 2000; // scatterRotationMax: 2000
+      const rotZ = (Math.random() - 0.5) * 2000;
       
-      // Scaled up duration by 1.5x for slow-motion effect (1.2s -> 1.8s)
-      htmlEl.style.transition = 'transform 1.8s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 1.3s ease-out';
-      htmlEl.style.transform = `translate(${pushX}px, ${pushY}px) rotateZ(${rotZ}deg) scale(${Math.random() * 0.5 + 0.5})`;
-      htmlEl.style.opacity = '0';
+      // Each character waits for the wave to arrive, then shatters
+      setTimeout(() => {
+        el.style.transition = 'transform 1.4s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.8s ease-out';
+        el.style.transform = `translate(${pushX}px, ${pushY}px) rotateZ(${rotZ}deg) scale(${Math.random() * 0.5 + 0.5})`;
+        el.style.opacity = '0';
+      }, delay);
     });
 
-    // Also blow away the button itself
+    // Button shatters immediately (it's at the epicenter)
     const btn = formRef.current?.querySelector('button');
     if (btn) {
-      btn.style.transition = 'transform 1.8s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.9s';
+      btn.style.transition = 'transform 1.0s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.5s';
       btn.style.transform = 'translateY(100px) scale(0)';
       btn.style.opacity = '0';
     }
@@ -92,31 +129,37 @@ export default function WritePage() {
     }
 
     setIsSubmitting(true);
-    setPhase('detonation');
     
-    // Lock epicenter strictly to the button's geometric center (bypassing touch hitboxes)
+    // Lock epicenter strictly to the button's geometric center
     const btnRect = formRef.current?.querySelector('button')?.getBoundingClientRect();
     const ex = btnRect ? btnRect.left + btnRect.width / 2 : clickPosRef.current.x;
     const ey = btnRect ? btnRect.top + btnRect.height / 2 : clickPosRef.current.y;
     clickPosRef.current = { x: ex, y: ey };
 
-    // Wait 1 frame for Bait & Switch to render, then apply physics
+    // === PHASE 1: Implosion (300ms anticipation) ===
+    setPhase('detonation');
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        applyShatterPhysics(ex, ey);
+        applyImplosion(ex, ey);
       });
     });
+
+    // === PHASE 2: After 300ms, trigger the actual shockwave ===
+    setTimeout(() => {
+      applyShatterPhysics(ex, ey);
+    }, 350);
     
     const res = await submitLie(content, content);
     
     if (res.success && res.id) {
-      // Catharsis sequence timings (Slowed down for cinematic effect)
-      setTimeout(() => setPhase('void'), 1800); // Wait for slow shockwave to clear
-      setTimeout(() => setPhase('forgiven'), 3000); // Voice appears
+      // Catharsis sequence timings (synced with wave propagation)
+      // Wave takes ~2s to cross the full screen at 800px/s
+      setTimeout(() => setPhase('void'), 2500); // After wave has swept everything
+      setTimeout(() => setPhase('forgiven'), 4000); // Voice appears from the void
       
       setTimeout(() => {
         router.push(`/${locale}/read/${res.id}`);
-      }, 7000); // Extended wait for reading
+      }, 8000); // Extended wait for reading
     } else {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
@@ -153,18 +196,19 @@ export default function WritePage() {
             }
           `}</style>
 
-          {/* Void layer that gets carved open from epicenter */}
+          {/* Void layer that follows behind the wave (synced to wave speed) */}
           <div
             className="fixed inset-0 z-[198] pointer-events-none"
             style={{
               backgroundColor: '#ffffff',
               '--ex': `${clickPosRef.current.x}px`,
               '--ey': `${clickPosRef.current.y}px`,
-              animation: 'dark-cleave 0.2s cubic-bezier(0.1, 0.9, 0.2, 1) both',
+              animation: 'dark-cleave 2.0s cubic-bezier(0.05, 0.95, 0.2, 1) both',
+              animationDelay: '350ms',
             } as React.CSSProperties}
           />
 
-          {/* Primary ring */}
+          {/* Primary ring - starts after implosion phase (350ms delay) */}
           <div
             className="fixed pointer-events-none rounded-full z-[201]"
             style={{
@@ -177,10 +221,11 @@ export default function WritePage() {
               borderStyle: 'solid',
               borderColor: '#000000',
               animation: 'sw-primary 2.0s cubic-bezier(0.05, 0.95, 0.2, 1) both',
+              animationDelay: '350ms',
             }}
           />
 
-          {/* Secondary ring */}
+          {/* Secondary ring - the heavy dust wave */}
           <div
             className="fixed pointer-events-none rounded-full z-[200]"
             style={{
@@ -194,7 +239,7 @@ export default function WritePage() {
               borderColor: '#4f4f4f',
               borderWidth: '17px',
               animation: 'sw-secondary 1.5s cubic-bezier(0.25, 0.8, 0.2, 1) both',
-              animationDelay: '750ms',
+              animationDelay: '1100ms',
             }}
           />
         </>
