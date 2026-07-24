@@ -139,7 +139,7 @@ export default function StoryReader({ initialLie, locale }: Props) {
         </p>
         
         {/* The Confession (Dynamic Typography) */}
-        <p className={`font-serif text-foreground break-words break-all transition-all duration-700 ease-out ${
+        <p className={`font-special text-foreground break-words break-all transition-all duration-700 ease-out ${
           content?.length < 50 ? 'text-4xl md:text-6xl lg:text-7xl leading-tight' : 
           content?.length < 150 ? 'text-3xl md:text-4xl lg:text-5xl leading-tight' : 
           'text-2xl md:text-3xl lg:text-4xl leading-tight'
