@@ -22,6 +22,40 @@ export default function WritePage() {
   // 'writing' -> 'detonation' -> 'detonation-simple' -> 'void' -> 'forgiven'
   const [phase, setPhase] = useState<'writing' | 'detonation' | 'detonation-simple' | 'void' | 'forgiven'>('writing');
 
+  // Dynamic Placeholder Logic
+  const promptsId = [
+    "Saya tidak berani bilang ke dia...",
+    "Sebenarnya, hari itu saya...",
+    "Hal yang paling saya sesali...",
+    "Mereka mengira saya...",
+    "Tuliskan kebohongan Anda di sini..."
+  ];
+  const promptsEn = [
+    "I never had the courage to tell them...",
+    "The truth about that day is...",
+    "My biggest regret is...",
+    "They all think I...",
+    "Write your lie here..."
+  ];
+  
+  const [promptIndex, setPromptIndex] = useState(0);
+  const [promptOpacity, setPromptOpacity] = useState(1);
+  const prompts = locale === 'en' ? promptsEn : promptsId;
+
+  useEffect(() => {
+    if (content.length > 0) return;
+    
+    const interval = setInterval(() => {
+      setPromptOpacity(0);
+      setTimeout(() => {
+        setPromptIndex((prev) => (prev + 1) % prompts.length);
+        setPromptOpacity(1);
+      }, 1000); // Wait for fade out
+    }, 5000); // 4s visible + 1s fade
+
+    return () => clearInterval(interval);
+  }, [content.length, prompts.length]);
+
   // Header reveal logic: letters appear randomly starting at charCount 31
   const headerText = locale === 'en' ? 'The Void is Listening' : 'Kehampaan Mendengarkan';
   
@@ -338,12 +372,26 @@ export default function WritePage() {
         )}
         
         <div className="relative w-full flex-1 flex flex-col justify-center min-h-[30dvh]">
+          {/* Dynamic Fading Placeholder */}
+          {content.length === 0 && phase === 'writing' && (
+            <div 
+              className="absolute inset-0 w-full h-full text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center pointer-events-none"
+              style={{
+                fontFamily: 'var(--font-special-elite)',
+                color: 'rgba(255, 255, 255, 0.3)',
+                transition: 'opacity 1s ease',
+                opacity: promptOpacity
+              }}
+            >
+              {prompts[promptIndex]}
+            </div>
+          )}
+
           <textarea
             ref={textareaRef}
             value={content}
             onChange={handleChange}
-            placeholder={t('writePlaceholder')}
-            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 placeholder:text-white/30 transition-opacity duration-300 z-10 ${
+            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 transition-opacity duration-300 z-10 ${
               phase !== 'writing' ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
             style={{ 
