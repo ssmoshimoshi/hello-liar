@@ -16,15 +16,15 @@ interface Props {
 // Particle component for the slow, magical dust effect
 function ParticleBurst({ color }: { color: string }) {
   // Generate particles once on mount
-  const particles = Array.from({ length: 1000 }, (_, i) => {
+  const particles = Array.from({ length: 300 }, (_, i) => {
     // Spread angle in radians (e.g. 360 deg = Math.PI * 2)
     const angleRange = Math.PI * 2;
     // Start angle so it centers pointing UP (-PI/2)
     const startAngle = -Math.PI / 2 - (angleRange / 2);
     const angle = startAngle + (Math.random() * angleRange);
     
-    const distance = 20 + Math.random() * 130;
-    const size = 1 + Math.random() * 2;
+    const distance = Math.random() * 500;
+    const size = 0.5 + Math.random() * 2.5;
     
     return {
       id: i,
@@ -37,7 +37,7 @@ function ParticleBurst({ color }: { color: string }) {
   });
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50 overflow-visible">
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -45,8 +45,7 @@ function ParticleBurst({ color }: { color: string }) {
           style={{ 
             backgroundColor: color,
             width: p.size, 
-            height: p.size,
-            boxShadow: `0 0 2px ${color}`
+            height: p.size
           }}
           initial={{ x: 0, y: 0, opacity: 0.8 }}
           animate={{ x: p.x, y: p.y, opacity: 0 }}
@@ -364,7 +363,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
         color: textColor,
         minHeight: '50vh',
         maxHeight: '80vh',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+        boxShadow: 'none'
       }}
       drag={canDrag ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
