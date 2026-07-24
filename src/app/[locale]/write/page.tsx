@@ -60,10 +60,10 @@ export default function WritePage() {
     
     const res = await submitLie(content, content);
     
-    if (res.success) {
+    if (res.success && res.id) {
       // Wait for animation to finish before redirecting
       setTimeout(() => {
-        router.push(`/${locale}`);
+        router.push(`/${locale}/read/${res.id}`);
       }, 1500);
     } else {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
@@ -73,36 +73,34 @@ export default function WritePage() {
     }
   };
 
+  const isDark = charCount >= 30;
+
   return (
-    <div className="fixed inset-0 bg-[var(--color-living-coral)] text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000">
+    <div className={`fixed inset-0 text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
       
       {/* Shockwave Effect */}
       {showShockwave && (
         <>
           <style>{`
-            @keyframes shockwave-ring {
-              0% { transform: scale(0); opacity: 1; border-width: 6px; }
-              100% { transform: scale(3); opacity: 0; border-width: 1px; }
+            @keyframes organic-shockwave {
+              0% { transform: scale(0); opacity: 0.8; filter: blur(20px); }
+              100% { transform: scale(4); opacity: 0; filter: blur(50px); }
             }
-            @keyframes shockwave-fill {
-              0% { transform: scale(0); }
-              100% { transform: scale(1); }
+            @keyframes screen-whiteout {
+              0% { opacity: 0; }
+              30% { opacity: 1; }
+              100% { opacity: 1; background-color: white; }
             }
           `}</style>
           <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none">
             <div style={{
-              width: '200vmax', height: '200vmax', borderRadius: '50%',
-              border: '4px solid white',
-              animation: 'shockwave-ring 0.8s ease-out forwards',
+              width: '100vmax', height: '100vmax', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%)',
+              animation: 'organic-shockwave 1.2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards',
             }} />
           </div>
-          <div className="fixed inset-0 z-[199] flex items-center justify-center pointer-events-none">
-            <div style={{
-              width: '200vmax', height: '200vmax', borderRadius: '50%',
-              background: 'white',
-              animation: 'shockwave-fill 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-            }} />
-          </div>
+          <div className="fixed inset-0 z-[199] flex items-center justify-center pointer-events-none"
+               style={{ animation: 'screen-whiteout 1.5s ease-in forwards' }} />
         </>
       )}
 
