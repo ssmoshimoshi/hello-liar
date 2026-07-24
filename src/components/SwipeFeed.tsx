@@ -353,15 +353,13 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
   return (
     <motion.div
-      className="absolute w-full flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
+      className="absolute h-full aspect-[1/1.6] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
       style={{
         x,
         rotate,
         scale,
         y: yOffset,
         zIndex: index,
-        minHeight: '50vh',
-        maxHeight: '80vh',
         perspective: 1000
       }}
       drag={canDrag ? "x" : false}
