@@ -411,18 +411,30 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
         className="relative w-full h-full flex flex-col items-center justify-center"
         style={{
           transformStyle: 'preserve-3d',
-          transformOrigin: 'center'
+          transformOrigin: 'bottom left'
         }}
         initial={false}
-        animate={{
-          rotateY: showCover ? -180 : 0,
-          rotateZ: 0,
-          scale: 1,
-          opacity: 1
-        }}
+        animate={
+          showCover 
+            ? {
+                rotateY: -180,
+                rotateX: 0,
+                rotateZ: 0,
+                scale: 1,
+                opacity: 1
+              }
+            : {
+                rotateY: [-180, -90, 0],
+                rotateX: [0, 15, 0],
+                rotateZ: [0, -5, 0],
+                scale: [1, 1.05, 1],
+                opacity: 1
+              }
+        }
         transition={{
-          duration: showCover ? 0 : 1.2,
-          ease: 'easeInOut'
+          duration: showCover ? 0 : 1.4,
+          ease: showCover ? 'linear' : 'easeInOut',
+          times: showCover ? undefined : [0, 0.4, 1]
         }}
       >
         
