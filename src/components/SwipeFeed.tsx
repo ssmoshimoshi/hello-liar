@@ -292,11 +292,12 @@ interface CardProps {
 
 function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
   const x = useMotionValue(0);
+  const y = useMotionValue(0);
   const controls = useAnimation();
   
-  const rotate = useTransform(x, [-200, 200], [-10, 10]);
+  // Dynamic rotation: wider range so high velocity throws cause more spin
+  const rotate = useTransform(x, [-500, 500], [-30, 30]);
   const scale = 1;
-  const yOffset = 0;
 
   // Background and text color transitions for swipe directions
   const backgroundColor = useTransform(
@@ -322,14 +323,42 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
   const handleDragEnd = async (e: any, info: PanInfo) => {
     const threshold = 100;
-    if (info.offset.x > threshold) {
-      await controls.start({ x: 500, opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } });
+    const velocityX = info.velocity.x;
+    const velocityY = info.velocity.y;
+    const offsetX = info.offset.x;
+
+    // Check both offset and velocity for flick actions
+    if (offsetX > threshold || velocityX > 400) {
+      // Throw right with momentum
+      const throwX = Math.max(500, velocityX * 0.8);
+      const throwY = velocityY * 0.5; // follow Y momentum
+      
+      await controls.start({ 
+        x: throwX, 
+        y: throwY, 
+        opacity: 0, 
+        transition: { duration: 0.4, ease: 'easeOut' } 
+      });
       onSwipe('right');
-    } else if (info.offset.x < -threshold) {
-      await controls.start({ x: -500, opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } });
+    } else if (offsetX < -threshold || velocityX < -400) {
+      // Throw left with momentum
+      const throwX = Math.min(-500, velocityX * 0.8);
+      const throwY = velocityY * 0.5;
+      
+      await controls.start({ 
+        x: throwX, 
+        y: throwY, 
+        opacity: 0, 
+        transition: { duration: 0.4, ease: 'easeOut' } 
+      });
       onSwipe('left');
     } else {
-      controls.start({ x: 0, transition: { type: 'spring', stiffness: 300, damping: 20 } });
+      // Snap back with spring
+      controls.start({ 
+        x: 0, 
+        y: 0, 
+        transition: { type: 'spring', stiffness: 400, damping: 25 } 
+      });
     }
   };
 
@@ -356,15 +385,15 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       className="absolute h-full aspect-[1/1.6] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
       style={{
         x,
+        y,
         rotate,
         scale,
-        y: yOffset,
         zIndex: index,
         perspective: 1000
       }}
-      drag={canDrag ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
+      drag={canDrag ? true : false}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={0.6}
       onDragEnd={handleDragEnd}
       animate={controls}
       initial={{ opacity: 0, scale: 0.95 }}
