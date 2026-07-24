@@ -296,19 +296,13 @@ interface CardProps {
 }
 
 function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total, showCounter, count, onCounterComplete }: CardProps) {
-  // Imperfect Stacking (Random Offset)
-  const [offset] = useState(() => ({
-    x: (Math.random() - 0.5) * 8,
-    y: (Math.random() - 0.5) * 8,
-    r: (Math.random() - 0.5) * 6
-  }));
-
-  const x = useMotionValue(offset.x);
-  const y = useMotionValue(offset.y);
+  // Perfect Stacking (No Offset)
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
   const controls = useAnimation();
   
-  // Dynamic rotation: wider range so high velocity throws cause more spin, resting at random offset
-  const rotate = useTransform(x, [-500, offset.x, 500], [-30 + offset.r, offset.r, 30 + offset.r]);
+  // Dynamic rotation: wider range so high velocity throws cause more spin
+  const rotate = useTransform(x, [-500, 0, 500], [-30, 0, 30]);
   const scale = 1;
 
   // Background and text color transitions for swipe directions
@@ -365,10 +359,10 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       });
       onSwipe('left');
     } else {
-      // Snap back with spring to imperfect resting place
+      // Snap back with spring to perfectly centered resting place
       controls.start({ 
-        x: offset.x, 
-        y: offset.y, 
+        x: 0, 
+        y: 0, 
         transition: { type: 'spring', stiffness: 400, damping: 25 } 
       });
     }
@@ -410,17 +404,19 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       animate={controls}
       initial={{ opacity: 0, scale: 0.95 }}
     >
-      {/* The 3D Wrapper that performs the Human Flip */}
+      {/* The 3D Wrapper that performs the 4-Step Human Flip */}
       <motion.div
         className="relative w-full h-full flex flex-col items-center justify-center"
         style={{
           transformStyle: 'preserve-3d',
-          transformOrigin: 'bottom left'
+          transformOrigin: 'center'
         }}
         initial={false}
         animate={
           showCover 
             ? {
+                x: 0,
+                y: 0,
                 rotateY: -180,
                 rotateX: 0,
                 rotateZ: 0,
@@ -428,17 +424,19 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
                 opacity: 1
               }
             : {
-                rotateY: [-180, -90, 0],
-                rotateX: [0, 15, 0],
-                rotateZ: [0, -5, 0],
-                scale: [1, 1.05, 1],
+                x: [0, -60, 30, 0],
+                y: [0, -60, -20, 0],
+                rotateY: [-180, -180, -90, 0],
+                rotateX: [0, 10, 5, 0],
+                rotateZ: [0, -15, 10, 0],
+                scale: [1, 1.05, 1.08, 1],
                 opacity: 1
               }
         }
         transition={{
           duration: showCover ? 0 : 1.4,
           ease: showCover ? 'linear' : 'easeInOut',
-          times: showCover ? undefined : [0, 0.4, 1]
+          times: showCover ? undefined : [0, 0.4, 0.7, 1]
         }}
       >
         
