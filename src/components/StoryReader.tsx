@@ -116,7 +116,7 @@ export default function StoryReader({ initialLie, locale }: Props) {
   };
 
   return (
-    <div className="relative w-full flex-grow flex flex-col items-center justify-center min-h-[80vh] px-6 md:px-12 py-24">
+    <div className="relative w-full h-full flex flex-col items-center justify-center px-4 md:px-12 py-4 md:py-8">
       {/* Ambient Blurred Background (Cathartic Minimalism) */}
       {initialLie.illustrated && initialLie.illustration_url && (
         <div className="fixed inset-0 pointer-events-none -z-10 opacity-10">
@@ -129,26 +129,29 @@ export default function StoryReader({ initialLie, locale }: Props) {
       )}
 
       {/* Main Content (Centered) */}
-      <div className="w-full max-w-4xl mx-auto flex flex-col items-center text-center">
+      <div className="w-full h-full max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
         
         {/* Story ID */}
         <p 
-          className="text-[10px] font-sans uppercase tracking-[0.4em] mb-12 opacity-50"
+          className="text-[10px] font-sans uppercase tracking-[0.4em] mb-4 md:mb-8 opacity-50 shrink-0"
         >
           Nᵒ {initialLie.id.slice(0, 8)}
         </p>
         
         {/* The Confession (Dynamic Typography) */}
-        <p className={`font-special text-foreground break-words break-all transition-all duration-700 ease-out ${
-          content?.length < 50 ? 'text-4xl md:text-6xl lg:text-7xl leading-tight' : 
-          content?.length < 150 ? 'text-3xl md:text-4xl lg:text-5xl leading-tight' : 
-          'text-2xl md:text-3xl lg:text-4xl leading-tight'
-        }`}>
-          &ldquo;{content}&rdquo;
-        </p>
+        <div className="flex-1 w-full flex flex-col items-center justify-center min-h-0 my-4">
+          <p className={`font-special text-foreground break-words break-all transition-all duration-700 ease-out ${
+            content?.length < 50 ? 'text-3xl md:text-5xl lg:text-6xl leading-tight' : 
+            content?.length < 150 ? 'text-2xl md:text-3xl lg:text-4xl leading-tight' : 
+            content?.length < 300 ? 'text-xl md:text-2xl lg:text-3xl leading-snug' :
+            'text-lg md:text-xl lg:text-2xl leading-snug'
+          }`}>
+            &ldquo;{content}&rdquo;
+          </p>
+        </div>
 
         {/* Action Buttons */}
-        <div className="mt-32 md:mt-40 flex flex-col items-center gap-10 w-full max-w-sm">
+        <div className="mt-4 md:mt-8 flex flex-col items-center gap-6 w-full max-w-sm shrink-0">
           
           <RippleButton
             onClick={handleResonate}

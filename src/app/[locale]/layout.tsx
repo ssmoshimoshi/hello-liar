@@ -80,14 +80,14 @@ export default async function RootLayout({
       lang={locale}
       className={`${baskerville.variable} ${specialElite.variable} ${inter.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className="min-h-full flex flex-col font-serif bg-background text-foreground relative pb-32 md:pb-0">
+      <body suppressHydrationWarning className="h-[100dvh] w-full overflow-hidden flex flex-col font-serif bg-background text-foreground relative">
         <NextIntlClientProvider messages={messages}>
           <FloatingNav />
-          <main className="flex-grow flex flex-col">
+          <main className="flex-grow flex flex-col min-h-0 relative">
             {children}
           </main>
           <footer 
-            className="border-t py-8 md:py-12 px-6 md:px-12"
+            className="shrink-0 border-t py-4 md:py-6 px-6 md:px-12 z-50"
             style={{ borderColor: 'var(--gray-100)' }}
           >
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
