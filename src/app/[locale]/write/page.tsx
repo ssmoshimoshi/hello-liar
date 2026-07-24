@@ -19,8 +19,8 @@ export default function WritePage() {
   const [charCount, setCharCount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  // 'writing' -> 'detonation' -> 'void' -> 'forgiven'
-  const [phase, setPhase] = useState<'writing' | 'detonation' | 'void' | 'forgiven'>('writing');
+  // 'writing' -> 'detonation' -> 'detonation-simple' -> 'void' -> 'forgiven'
+  const [phase, setPhase] = useState<'writing' | 'detonation' | 'detonation-simple' | 'void' | 'forgiven'>('writing');
 
   // Header reveal logic: letters appear randomly starting at charCount 31
   const headerText = locale === 'en' ? 'The Void is Listening' : 'Kehampaan Mendengarkan';
@@ -130,6 +130,41 @@ export default function WritePage() {
 
     setIsSubmitting(true);
     
+    // Accessibility: Reduced Motion Check
+    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (isReduced) {
+      setPhase('detonation-simple');
+      
+      // Gentle fade out for header and button instead of physics
+      if (headerRef.current) {
+        headerRef.current.style.transition = 'opacity 1.5s ease';
+        headerRef.current.style.opacity = '0';
+      }
+      const btn = formRef.current?.querySelector('button');
+      if (btn) {
+        btn.style.transition = 'opacity 1s ease';
+        btn.style.opacity = '0';
+      }
+
+      const res = await submitLie(content, content);
+      
+      if (res.success && res.id) {
+        setTimeout(() => setPhase('void'), 1500); 
+        setTimeout(() => setPhase('forgiven'), 3000);
+        setTimeout(() => router.push(`/${locale}/read/${res.id}`), 6000);
+      } else {
+        setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
+        setIsSubmitting(false);
+        setPhase('writing');
+        if (headerRef.current) headerRef.current.style.opacity = '1';
+        if (btn) btn.style.opacity = '1';
+      }
+      return;
+    }
+
+    // Normal Cinematic Flow
+    
     // Lock epicenter strictly to the button's geometric center
     const btnRect = formRef.current?.querySelector('button')?.getBoundingClientRect();
     const ex = btnRect ? btnRect.left + btnRect.width / 2 : clickPosRef.current.x;
@@ -177,7 +212,7 @@ export default function WritePage() {
     <div className={`fixed inset-0 text-white z-40 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden transition-colors duration-1000 ${isDark ? 'bg-black' : 'bg-[var(--color-living-coral)]'}`}>
       
       {/* Shockwave Effect — originates from exact click coordinates */}
-      {phase !== 'writing' && (
+      {(phase === 'detonation' || phase === 'void') && (
         <>
           <style>{`
             @keyframes sw-primary {
@@ -245,6 +280,14 @@ export default function WritePage() {
         </>
       )}
 
+      {/* Reduced Motion Simple Void Transition */}
+      {(phase === 'detonation-simple' || (phase === 'void' && typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) && (
+        <div
+          className="fixed inset-0 z-[198] bg-white pointer-events-none transition-opacity duration-[1500ms] ease-in-out"
+          style={{ opacity: phase === 'detonation-simple' ? 0 : 1 }}
+        />
+      )}
+
       {/* Dynamic Voronoi Void */}
       <VoronoiBackground charCount={charCount} />
 
@@ -303,7 +346,8 @@ export default function WritePage() {
             style={{ 
               fontFamily: 'var(--font-special-elite)',
               color: '#ffffff',
-              textShadow: content.length > 0 ? '0 2px 10px rgba(0,0,0,0.1)' : 'none'
+              textShadow: content.length > 0 ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
+              transition: phase === 'detonation-simple' ? 'opacity 1.5s ease' : 'opacity 0.3s'
             }}
             minLength={10}
             maxLength={500}
@@ -311,7 +355,7 @@ export default function WritePage() {
           />
           
           {/* The Bait and Switch: renders individual spans for shattering */}
-          {phase !== 'writing' && (
+          {(phase === 'detonation' || phase === 'void' || phase === 'forgiven') && (
             <div 
               className="absolute inset-0 w-full text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center pointer-events-none z-20"
               style={{ 
