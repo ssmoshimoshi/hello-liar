@@ -340,7 +340,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
   return (
     <motion.div
-      className="absolute w-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border shadow-xl"
+      className="absolute w-full flex flex-col items-center justify-center p-8 md:p-12 rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border-[0.5px]"
       style={{
         x,
         rotate,
@@ -352,6 +352,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
         color: textColor,
         minHeight: '50vh',
         maxHeight: '80vh',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
       }}
       drag={canDrag ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
