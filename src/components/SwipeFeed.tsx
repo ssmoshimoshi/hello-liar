@@ -79,7 +79,7 @@ function SwipeCounter({ count, type, onComplete }: { count: number; type: 'empty
       <div className="relative flex items-center justify-center">
         {/* The Number */}
         <motion.span
-          className="text-6xl font-mono mix-blend-multiply"
+          className="text-3xl font-mono mix-blend-multiply"
           style={{ color: '#4b5563' }} // gray-600 for ash effect
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
@@ -340,10 +340,10 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
   }, [controls]);
 
   const getTextClasses = () => {
-    if (content.length < 50) return 'text-2xl md:text-3xl';
-    if (content.length < 150) return 'text-xl md:text-2xl';
-    if (content.length < 400) return 'text-base md:text-lg';
-    return 'text-sm md:text-base';
+    if (content.length < 150) return 'text-[10px] md:text-xs tracking-[0.2em]';
+    if (content.length < 300) return 'text-[9px] md:text-[10px] tracking-widest';
+    if (content.length < 500) return 'text-[8px] md:text-[9px] tracking-widest';
+    return 'text-[7px] md:text-[8px] tracking-widest leading-normal';
   };
 
   // The card is covered if it's NOT the top card, OR if it IS the top card but the reveal sequence is still running
@@ -374,24 +374,24 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
         className="relative w-full h-full flex flex-col items-center justify-center"
         style={{
           transformStyle: 'preserve-3d',
-          transformOrigin: 'bottom left'
+          transformOrigin: 'center'
         }}
         initial={false}
         animate={{
           rotateY: showCover ? -180 : 0,
-          rotateZ: showCover ? -5 : 0,
-          scale: showCover ? 1.05 : 1,
+          rotateZ: 0,
+          scale: 1,
           opacity: 1
         }}
         transition={{
-          duration: showCover ? 0.3 : 1.2,
-          ease: showCover ? 'easeOut' : [0.23, 1, 0.32, 1]
+          duration: showCover ? 0 : 1.2,
+          ease: 'easeInOut'
         }}
       >
         
         {/* FRONT FACE (The Story) */}
         <motion.div 
-          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border-[0.5px] p-8 md:p-12 flex flex-col items-center justify-center"
+          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border-[0.5px] p-6 md:p-8 flex flex-col items-center justify-center"
           style={{ 
             backfaceVisibility: 'hidden',
             backgroundColor,
@@ -399,12 +399,6 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
             color: textColor,
           }}
         >
-          <div className="absolute top-8 left-8 flex items-center justify-between w-[calc(100%-4rem)] pointer-events-none opacity-60 z-10">
-            <span className="font-mono text-xs tracking-[0.3em]">
-              Nᵒ {lie.id.slice(0, 8)}
-            </span>
-          </div>
-
           {isFirstCard && (
             <motion.div 
               className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none z-10"
@@ -418,24 +412,13 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
           )}
 
           {/* Core Content */}
-          <div className="relative max-h-[60vh] overflow-y-auto z-10 scrollbar-hide">
+          <div className="relative w-full flex-1 flex items-center justify-center z-10 pointer-events-none overflow-hidden">
             <p 
-              className={`text-center leading-loose tracking-wide relative ${getTextClasses()}`}
+              className={`text-center leading-loose relative w-full ${getTextClasses()}`}
               style={{ fontFamily: 'var(--font-special-elite)' }}
             >
               &ldquo;{content}&rdquo;
             </p>
-
-            {/* X Strikethrough for Doubt */}
-            <motion.div 
-              className="absolute inset-0 pointer-events-none"
-              style={{ opacity: strikeOpacity }}
-            >
-              <svg className="w-full h-full opacity-80" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-                <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-              </svg>
-            </motion.div>
           </div>
 
           {/* Direction Hints during drag */}

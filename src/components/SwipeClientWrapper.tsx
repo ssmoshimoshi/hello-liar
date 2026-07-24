@@ -14,7 +14,7 @@ export default function SwipeClientWrapper() {
   };
 
   return (
-    <div className="w-full h-[100dvh] bg-background relative overflow-hidden flex flex-col">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-background overflow-hidden flex flex-col">
       <CategoryOnboarding onComplete={handleOnboardingComplete} />
       {/* Only show the feed if onboarding is complete so it doesn't fetch prematurely */}
       {onboardingComplete && (

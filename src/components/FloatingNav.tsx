@@ -164,8 +164,8 @@ export default function FloatingNav() {
             playSound('click');
             setIsOpen(!isOpen);
           }}
-          className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-colors duration-300 ${
-            isOpen ? 'bg-[var(--color-living-coral)] text-white' : 'bg-foreground text-background'
+          className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition-colors duration-300 ${
+            isOpen ? 'bg-[var(--color-living-coral)] text-white' : 'bg-[var(--gray-200)] text-[var(--gray-500)] hover:bg-[var(--gray-300)]'
           }`}
           whileTap={{ scale: 0.9 }}
           aria-label="Menu"
