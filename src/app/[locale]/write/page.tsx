@@ -314,8 +314,11 @@ export default function WritePage() {
           {headerText.split('').map((ch, i) => (
             <span 
               key={i} 
-              className="header-char inline-block transition-opacity duration-500"
-              style={{ opacity: ch === ' ' ? 1 : (revealedSet.has(i) ? 0.8 : 0) }}
+              className={ch === ' ' ? "inline-block" : "header-char inline-block transition-opacity duration-500"}
+              style={{ 
+                opacity: ch === ' ' ? 1 : (revealedSet.has(i) ? 0.8 : 0),
+                willChange: ch === ' ' ? 'auto' : 'transform, opacity'
+              }}
             >
               {ch === ' ' ? '\u00A0' : ch}
             </span>
@@ -366,7 +369,13 @@ export default function WritePage() {
               }}
             >
               {content.split('').map((char, i) => (
-                <span key={i} className="shatter-char inline-block">
+                <span 
+                  key={i} 
+                  className={char === ' ' || char === '\n' ? "inline-block" : "shatter-char inline-block"}
+                  style={{
+                    willChange: char === ' ' || char === '\n' ? 'auto' : 'transform, opacity'
+                  }}
+                >
                   {char === ' ' ? '\u00A0' : char}
                 </span>
               ))}
