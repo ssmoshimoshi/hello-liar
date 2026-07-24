@@ -62,12 +62,13 @@ export default function WritePage() {
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
       
       // Inverse distance law for push strength using user config
-      const strength = Math.max(150, 500 / (dist / 100));
+      const strength = Math.max(150, 4200 / (dist / 100)); // scatterStrength: 4200
       const pushX = (dx / dist) * strength + (Math.random() * 200 - 100);
       const pushY = (dy / dist) * strength + (Math.random() * 200 - 100);
-      const rotZ = (Math.random() - 0.5) * 0; // scatterRotationMax is 0
+      const rotZ = (Math.random() - 0.5) * 2000; // scatterRotationMax: 2000
       
-      htmlEl.style.transition = 'transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.35s ease-out';
+      // Scaled up duration by 1.5x for slow-motion effect (1.2s -> 1.8s)
+      htmlEl.style.transition = 'transform 1.8s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 1.3s ease-out';
       htmlEl.style.transform = `translate(${pushX}px, ${pushY}px) rotateZ(${rotZ}deg) scale(${Math.random() * 0.5 + 0.5})`;
       htmlEl.style.opacity = '0';
     });
@@ -75,7 +76,7 @@ export default function WritePage() {
     // Also blow away the button itself
     const btn = formRef.current?.querySelector('button');
     if (btn) {
-      btn.style.transition = 'transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.25s';
+      btn.style.transition = 'transform 1.8s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.9s';
       btn.style.transform = 'translateY(100px) scale(0)';
       btn.style.opacity = '0';
     }
@@ -109,13 +110,13 @@ export default function WritePage() {
     const res = await submitLie(content, content);
     
     if (res.success && res.id) {
-      // Catharsis sequence timings
-      setTimeout(() => setPhase('void'), 600); // Scatter duration is 0.5s
-      setTimeout(() => setPhase('forgiven'), 1500); // Voice appears
+      // Catharsis sequence timings (Slowed down for cinematic effect)
+      setTimeout(() => setPhase('void'), 1800); // Wait for slow shockwave to clear
+      setTimeout(() => setPhase('forgiven'), 3000); // Voice appears
       
       setTimeout(() => {
         router.push(`/${locale}/read/${res.id}`);
-      }, 4500); // Extended wait for reading
+      }, 7000); // Extended wait for reading
     } else {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
@@ -137,14 +138,14 @@ export default function WritePage() {
         <>
           <style>{`
             @keyframes sw-primary {
-              0%   { transform: scale(0);   opacity: 1; border-width: 2px; filter: blur(1px); }
+              0%   { transform: scale(0);   opacity: 1; border-width: 2px; filter: blur(7px); }
               15%  { opacity: 1; }
-              100% { transform: scale(500); opacity: 0; border-width: 0.5px; filter: blur(0px); }
+              100% { transform: scale(500); opacity: 0; border-width: 0px; filter: blur(0px); }
             }
             @keyframes sw-secondary {
               0%   { transform: scale(0);   opacity: 0; filter: blur(2px); }
               8%   { opacity: 0.5; }
-              100% { transform: scale(160); opacity: 0; filter: blur(16px); }
+              100% { transform: scale(90); opacity: 0; filter: blur(20px); }
             }
             @keyframes dark-cleave {
               0%   { clip-path: circle(0px   at var(--ex) var(--ey)); }
@@ -159,7 +160,7 @@ export default function WritePage() {
               backgroundColor: '#ffffff',
               '--ex': `${clickPosRef.current.x}px`,
               '--ey': `${clickPosRef.current.y}px`,
-              animation: 'dark-cleave 0.1s cubic-bezier(0.1, 0.9, 0.2, 1) both',
+              animation: 'dark-cleave 0.2s cubic-bezier(0.1, 0.9, 0.2, 1) both',
             } as React.CSSProperties}
           />
 
@@ -175,7 +176,7 @@ export default function WritePage() {
               marginLeft: '-2px',
               borderStyle: 'solid',
               borderColor: '#000000',
-              animation: 'sw-primary 2.2s cubic-bezier(0.05, 0.95, 0.2, 1) both',
+              animation: 'sw-primary 2.0s cubic-bezier(0.05, 0.95, 0.2, 1) both',
             }}
           />
 
@@ -190,10 +191,10 @@ export default function WritePage() {
               marginTop: '-2px',
               marginLeft: '-2px',
               borderStyle: 'solid',
-              borderColor: '#2e2e2e',
-              borderWidth: '4px',
-              animation: 'sw-secondary 0.6s cubic-bezier(0.25, 0.8, 0.2, 1) both',
-              animationDelay: '90ms',
+              borderColor: '#4f4f4f',
+              borderWidth: '17px',
+              animation: 'sw-secondary 1.5s cubic-bezier(0.25, 0.8, 0.2, 1) both',
+              animationDelay: '750ms',
             }}
           />
         </>
