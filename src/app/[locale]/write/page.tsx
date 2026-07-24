@@ -61,13 +61,13 @@ export default function WritePage() {
       const dy = elCenterY - epicenterY;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
       
-      // Inverse distance law for push strength
-      const strength = Math.max(150, 4000 / (dist / 100));
+      // Inverse distance law for push strength using user config
+      const strength = Math.max(150, 500 / (dist / 100));
       const pushX = (dx / dist) * strength + (Math.random() * 200 - 100);
       const pushY = (dy / dist) * strength + (Math.random() * 200 - 100);
-      const rotZ = (Math.random() - 0.5) * 1000;
+      const rotZ = (Math.random() - 0.5) * 0; // scatterRotationMax is 0
       
-      htmlEl.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.8s ease-out';
+      htmlEl.style.transition = 'transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.35s ease-out';
       htmlEl.style.transform = `translate(${pushX}px, ${pushY}px) rotateZ(${rotZ}deg) scale(${Math.random() * 0.5 + 0.5})`;
       htmlEl.style.opacity = '0';
     });
@@ -75,7 +75,7 @@ export default function WritePage() {
     // Also blow away the button itself
     const btn = formRef.current?.querySelector('button');
     if (btn) {
-      btn.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.5s';
+      btn.style.transition = 'transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.25s';
       btn.style.transform = 'translateY(100px) scale(0)';
       btn.style.opacity = '0';
     }
@@ -110,12 +110,12 @@ export default function WritePage() {
     
     if (res.success && res.id) {
       // Catharsis sequence timings
-      setTimeout(() => setPhase('void'), 1300); // Wait for shockwave to cover screen
-      setTimeout(() => setPhase('forgiven'), 2500); // Voice appears
+      setTimeout(() => setPhase('void'), 600); // Scatter duration is 0.5s
+      setTimeout(() => setPhase('forgiven'), 1500); // Voice appears
       
       setTimeout(() => {
         router.push(`/${locale}/read/${res.id}`);
-      }, 6000); // Extended wait for reading
+      }, 4500); // Extended wait for reading
     } else {
       setErrorMsg(res.error || (locale === 'en' ? 'An error occurred' : 'Terjadi kesalahan'));
       setIsSubmitting(false);
@@ -137,14 +137,14 @@ export default function WritePage() {
         <>
           <style>{`
             @keyframes sw-primary {
-              0%   { transform: scale(0);   opacity: 1; }
+              0%   { transform: scale(0);   opacity: 1; border-width: 2px; filter: blur(1px); }
               15%  { opacity: 1; }
-              100% { transform: scale(300); opacity: 0; }
+              100% { transform: scale(500); opacity: 0; border-width: 0.5px; filter: blur(0px); }
             }
             @keyframes sw-secondary {
-              0%   { transform: scale(0);   opacity: 0; }
-              8%   { opacity: 0.55; }
-              100% { transform: scale(200); opacity: 0; }
+              0%   { transform: scale(0);   opacity: 0; filter: blur(2px); }
+              8%   { opacity: 0.5; }
+              100% { transform: scale(160); opacity: 0; filter: blur(16px); }
             }
             @keyframes dark-cleave {
               0%   { clip-path: circle(0px   at var(--ex) var(--ey)); }
@@ -152,17 +152,18 @@ export default function WritePage() {
             }
           `}</style>
 
-          {/* White layer that gets carved open from epicenter */}
+          {/* Void layer that gets carved open from epicenter */}
           <div
-            className="fixed inset-0 z-[198] bg-white pointer-events-none"
+            className="fixed inset-0 z-[198] pointer-events-none"
             style={{
+              backgroundColor: '#ffffff',
               '--ex': `${clickPosRef.current.x}px`,
               '--ey': `${clickPosRef.current.y}px`,
-              animation: 'dark-cleave 1.3s cubic-bezier(0.1, 0.9, 0.2, 1) both',
+              animation: 'dark-cleave 0.1s cubic-bezier(0.1, 0.9, 0.2, 1) both',
             } as React.CSSProperties}
           />
 
-          {/* Primary ring — Living Coral, razor thin */}
+          {/* Primary ring */}
           <div
             className="fixed pointer-events-none rounded-full z-[201]"
             style={{
@@ -172,12 +173,13 @@ export default function WritePage() {
               height: '4px',
               marginTop: '-2px',
               marginLeft: '-2px',
-              border: '2px solid #FC766A',
-              animation: 'sw-primary 1.2s cubic-bezier(0.05, 0.95, 0.2, 1) both',
+              borderStyle: 'solid',
+              borderColor: '#000000',
+              animation: 'sw-primary 2.2s cubic-bezier(0.05, 0.95, 0.2, 1) both',
             }}
           />
 
-          {/* Secondary ring — white, soft blur, rarefaction wave */}
+          {/* Secondary ring */}
           <div
             className="fixed pointer-events-none rounded-full z-[200]"
             style={{
@@ -187,9 +189,10 @@ export default function WritePage() {
               height: '4px',
               marginTop: '-2px',
               marginLeft: '-2px',
-              border: '6px solid rgba(255,255,255,0.45)',
-              filter: 'blur(3px)',
-              animation: 'sw-secondary 1.5s cubic-bezier(0.25, 0.8, 0.2, 1) both',
+              borderStyle: 'solid',
+              borderColor: '#2e2e2e',
+              borderWidth: '4px',
+              animation: 'sw-secondary 0.6s cubic-bezier(0.25, 0.8, 0.2, 1) both',
               animationDelay: '90ms',
             }}
           />
