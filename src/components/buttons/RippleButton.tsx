@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
+import { triggerHaptic } from '@/lib/haptics';
 
 interface RippleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ export default function RippleButton({ children, className, onClick, disabled, .
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
+    triggerHaptic('echo'); // Sensory confirmation for emotional resonate tap
     
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
@@ -43,7 +45,7 @@ export default function RippleButton({ children, className, onClick, disabled, .
         ref={buttonRef}
         onClick={handleClick}
         disabled={disabled}
-        className={`relative overflow-hidden ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`relative min-h-[48px] py-3.5 px-6 flex items-center justify-center overflow-hidden select-none ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         {...props}
       >
         {ripples.map(r => (

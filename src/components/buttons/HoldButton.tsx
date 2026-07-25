@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import { triggerHaptic } from '@/lib/haptics';
 
 interface HoldButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export default function HoldButton({
   const startHold = () => {
     if (disabled) return;
     setIsHolding(true);
+    triggerHaptic('pulse'); // Initiate sensory rhythmic pulse
     startTimeRef.current = performance.now();
     
     const animate = (time: number) => {
@@ -33,6 +35,7 @@ export default function HoldButton({
       
       if (newProgress >= 100) {
         setIsHolding(false);
+        triggerHaptic('heavy'); // Heavy tactile confirmation on release complete
         onHoldComplete();
         startTimeRef.current = null;
       } else {
@@ -67,7 +70,7 @@ export default function HoldButton({
       onPointerLeave={cancelHold}
       onContextMenu={(e) => e.preventDefault()} // prevent context menu on mobile hold
       disabled={disabled}
-      className={`relative overflow-hidden select-none touch-none ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98] transition-transform'}`}
+      className={`relative min-h-[48px] min-w-[48px] py-3.5 px-5 flex items-center justify-center overflow-hidden select-none touch-none ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98] transition-transform'}`}
       style={{ WebkitUserSelect: 'none' }}
       {...props}
     >

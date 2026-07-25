@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { addDoubt, addResonate } from '@/lib/actions';
 import { useTranslations } from 'next-intl';
 import { Tables } from '@/types/database';
+import { triggerHaptic } from '@/lib/haptics';
 
 export type Lie = Tables<'lies'>;
 
@@ -95,6 +96,7 @@ export default function StoryReader({ initialLie, locale }: Props) {
   };
 
   const handleShare = async () => {
+    triggerHaptic('light');
     const url = window.location.href;
     const title = `Hello Liar — Nᵒ ${initialLie.id.slice(0, 8)}`;
     const text = `"${content}"\n\n`;
@@ -177,7 +179,7 @@ export default function StoryReader({ initialLie, locale }: Props) {
 
             <button
               onClick={handleShare}
-              className="py-2 flex items-center justify-center text-[var(--gray-500)] font-sans uppercase tracking-[0.2em] text-xs transition-all duration-300 hover:text-foreground active:scale-[0.98]"
+              className="min-h-[48px] min-w-[48px] py-3.5 px-6 flex items-center justify-center text-[var(--gray-500)] font-sans uppercase tracking-[0.2em] text-xs transition-all duration-300 hover:text-foreground active:scale-[0.98]"
             >
               IG STORY
             </button>
