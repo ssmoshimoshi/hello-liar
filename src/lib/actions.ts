@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabase } from './supabase';
+import { translateBilingual } from './translator';
 
 export async function submitLie(content_id: string, content_en: string) {
   if (!content_id || !content_en) return { error: "Content is required" };
@@ -11,12 +12,14 @@ export async function submitLie(content_id: string, content_en: string) {
   if (content_id.length > 500 || content_en.length > 500) return { error: "Content must be less than 500 characters long" };
 
   // Sanitization: strip basic HTML tags
-  const sanitizedId = content_id.replace(/<[^>]*>?/gm, '');
-  const sanitizedEn = content_en.replace(/<[^>]*>?/gm, '');
+  const rawInput = (content_id || content_en || '').replace(/<[^>]*>?/gm, '');
+
+  // Autonomous real-time bilingual translation (ID ↔ EN)
+  const { content_id: finalId, content_en: finalEn } = await translateBilingual(rawInput);
 
   const { data, error } = await supabase
     .from('lies')
-    .insert([{ content_id: sanitizedId, content_en: sanitizedEn }])
+    .insert([{ content_id: finalId, content_en: finalEn }])
     .select('id')
     .single();
 
