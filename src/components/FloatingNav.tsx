@@ -32,6 +32,7 @@ export default function FloatingNav() {
     window.location.reload();
   };
 
+  // Left wing items (displayed right-to-left from center)
   const leftItems = [
     {
       id: 'home',
@@ -53,6 +54,7 @@ export default function FloatingNav() {
     },
   ];
 
+  // Right wing items (displayed left-to-right from center)
   const rightItems = [
     {
       id: 'vault',
@@ -80,132 +82,86 @@ export default function FloatingNav() {
     setIsOpen(!isOpen);
   };
 
-  // Pure optical adaptive contrast engine without blur or fog halos
-  const containerOpacity = isOpen ? 'opacity-100' : isWrite ? 'opacity-20 hover:opacity-100' : 'opacity-45 hover:opacity-100';
+  // Adaptive opacity per page context — no blend mode needed
+  const containerOpacity = isWrite
+    ? 'opacity-20 hover:opacity-100 focus-within:opacity-100'
+    : 'opacity-50 hover:opacity-100 focus-within:opacity-100';
+
+  const labelBase = 'text-[8px] font-mono uppercase tracking-[0.12em] transition-all duration-300';
+  const labelActive = 'font-bold underline underline-offset-4 text-[#FC766A]';
+  const labelIdle = 'opacity-60 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[#FC766A] active:text-[#8c312f]';
 
   return (
-    <div 
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center transition-opacity duration-700 select-none ${containerOpacity}`}
-      style={{ mixBlendMode: 'difference' }}
+    <div
+      className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-2 transition-opacity duration-700 select-none ${containerOpacity}`}
     >
-      {/* Pivot container ensures central toggle is immovably anchored at exactly 50% axis */}
-      <div className="relative flex items-center justify-center text-white">
-        
-        {/* Left Horizontal Wing (Absolutely Anchored to the Left of Toggle) */}
+      {/* Left half — flex-1 ensures equal width as right half, items pushed to right edge (toward center) */}
+      <div className="flex-1 flex items-center justify-end gap-x-1">
         <AnimatePresence>
-          {isOpen && (
-            <motion.div 
-              className="absolute right-full mr-0.5 flex items-center gap-0 overflow-hidden whitespace-nowrap"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 'auto' }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          {isOpen && leftItems.map((item, index) => (
+            <motion.button
+              key={item.id}
+              onClick={() => { playSound('click'); item.action(); setIsOpen(false); }}
+              className="px-1.5 min-h-[48px] flex items-center justify-center focus:outline-none"
+              initial={{ opacity: 0, x: 16, scale: 0.85 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 10, scale: 0.85 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 26, delay: index * 0.04 }}
+              aria-label={item.id}
             >
-              {leftItems.map((item, index) => (
-                <motion.button
-                  key={item.id}
-                  onClick={() => {
-                    playSound('click');
-                    item.action();
-                    setIsOpen(false);
-                  }}
-                  className="px-1.5 py-3.5 min-w-[36px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
-                  initial={{ opacity: 0, x: 25, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 15, scale: 0.8 }}
-                  transition={{ 
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 25,
-                    delay: index * 0.04,
-                  }}
-                  aria-label={item.id}
-                >
-                  <span 
-                    className={`text-[8px] font-mono uppercase tracking-[0.15em] transition-all duration-300 ${
-                      item.active 
-                        ? 'font-bold underline underline-offset-4 text-[var(--color-living-coral)]' 
-                        : 'opacity-75 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[var(--color-living-coral)]'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </motion.button>
-              ))}
-            </motion.div>
-          )}
+              <span className={`${labelBase} ${item.active ? labelActive : labelIdle}`}>
+                {item.label}
+              </span>
+            </motion.button>
+          ))}
         </AnimatePresence>
+      </div>
 
-        {/* Minimalist Bare (+) / (x) Trigger with 48x48px Invisible Touch Padding & Zero Center Shift */}
-        <button
-          onClick={handleToggle}
-          className="relative z-10 min-w-[48px] min-h-[48px] p-2 flex items-center justify-center text-white cursor-pointer select-none focus:outline-none transition-transform duration-300 active:scale-95"
-          aria-label="Toggle Navigation Wing"
+      {/* Center toggle — mathematically pinned at exact midpoint of full-width bar */}
+      <button
+        onClick={handleToggle}
+        className="mx-2 min-w-[48px] min-h-[48px] flex items-center justify-center text-current cursor-pointer focus:outline-none transition-transform duration-200 active:scale-90 shrink-0"
+        aria-label="Toggle Navigation Wing"
+      >
+        <motion.div
+          animate={{ rotate: isOpen ? 135 : 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className="flex items-center justify-center pointer-events-none"
         >
-          <motion.div
-            animate={{ rotate: isOpen ? 135 : 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="flex items-center justify-center pointer-events-none"
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="square"
           >
-            <svg 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="1.5" 
-              strokeLinecap="square" 
-              strokeLinejoin="miter"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </motion.div>
-        </button>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </motion.div>
+      </button>
 
-        {/* Right Horizontal Wing (Absolutely Anchored to the Right of Toggle) */}
+      {/* Right half — flex-1 mirrors left half exactly */}
+      <div className="flex-1 flex items-center justify-start gap-x-1">
         <AnimatePresence>
-          {isOpen && (
-            <motion.div 
-              className="absolute left-full ml-0.5 flex items-center gap-0 overflow-hidden whitespace-nowrap"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 'auto' }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          {isOpen && rightItems.map((item, index) => (
+            <motion.button
+              key={item.id}
+              onClick={() => { playSound('click'); item.action(); setIsOpen(false); }}
+              className="px-1.5 min-h-[48px] flex items-center justify-center focus:outline-none"
+              initial={{ opacity: 0, x: -16, scale: 0.85 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -10, scale: 0.85 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 26, delay: index * 0.04 }}
+              aria-label={item.id}
             >
-              {rightItems.map((item, index) => (
-                <motion.button
-                  key={item.id}
-                  onClick={() => {
-                    playSound('click');
-                    item.action();
-                    setIsOpen(false);
-                  }}
-                  className="px-1.5 py-3.5 min-w-[36px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
-                  initial={{ opacity: 0, x: -25, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -15, scale: 0.8 }}
-                  transition={{ 
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 25,
-                    delay: index * 0.04,
-                  }}
-                  aria-label={item.id}
-                >
-                  <span 
-                    className={`text-[8px] font-mono uppercase tracking-[0.15em] transition-all duration-300 ${
-                      item.active 
-                        ? 'font-bold underline underline-offset-4' 
-                        : 'opacity-75 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[var(--color-living-coral)]'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </motion.button>
-              ))}
-            </motion.div>
-          )}
+              <span className={`${labelBase} ${item.active ? labelActive : labelIdle}`}>
+                {item.label}
+              </span>
+            </motion.button>
+          ))}
         </AnimatePresence>
       </div>
     </div>
