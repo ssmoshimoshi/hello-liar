@@ -99,10 +99,10 @@ export default function FloatingNav() {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-2 transition-opacity duration-700 select-none ${containerOpacity}`}
+      className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-6 md:px-2 transition-opacity duration-700 select-none ${containerOpacity}`}
     >
-      {/* Left half — flex-1 ensures identical width to right half, pushing items toward center */}
-      <div className="flex-1 flex items-center justify-end gap-x-1">
+      {/* Left half — flex-1 ensures identical width to right half, pushing items toward center on PC, edge-flush on mobile */}
+      <div className="flex-1 flex items-center justify-between md:justify-end gap-x-1 md:gap-x-1">
         <AnimatePresence>
           {isOpen && leftItems.map((item, index) => (
             <motion.button
@@ -150,7 +150,7 @@ export default function FloatingNav() {
       </button>
 
       {/* Right half — flex-1 mirrors left half exactly */}
-      <div className="flex-1 flex items-center justify-start gap-x-1">
+      <div className="flex-1 flex items-center justify-between md:justify-start gap-x-1 md:gap-x-1">
         <AnimatePresence>
           {isOpen && rightItems.map((item, index) => (
             <motion.button

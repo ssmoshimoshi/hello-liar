@@ -74,7 +74,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-3 mb-12"
+            className="flex flex-wrap justify-between md:justify-center gap-y-4 md:gap-3 mb-12 w-full"
           >
             {CATEGORIES.map(cat => (
               <button
