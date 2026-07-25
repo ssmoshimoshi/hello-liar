@@ -86,25 +86,6 @@ export default async function RootLayout({
           <main className="flex-grow flex flex-col min-h-0 relative">
             {children}
           </main>
-          <footer 
-            className="shrink-0 border-t py-4 md:py-6 px-6 md:px-12 z-50"
-            style={{ borderColor: 'var(--gray-100)' }}
-          >
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-              <span 
-                className="text-[10px] font-sans uppercase tracking-[0.3em]"
-                style={{ color: 'var(--gray-400)' }}
-              >
-                Hello Liar © {new Date().getFullYear()}
-              </span>
-              <span 
-                className="text-[10px] font-sans uppercase tracking-[0.2em]"
-                style={{ color: 'var(--gray-300)' }}
-              >
-                {locale === 'en' ? 'Everyone lies.' : 'Semua orang berbohong.'}
-              </span>
-            </div>
-          </footer>
         </NextIntlClientProvider>
       </body>
     </html>
