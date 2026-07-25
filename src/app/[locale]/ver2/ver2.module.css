@@ -1,0 +1,88 @@
+/* src/app/[locale]/ver2/ver2.module.css */
+
+.container {
+  background-color: #000000;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Courier New", Courier, monospace;
+  margin: 0;
+  padding: 0;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  gap: 32px;
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.wordHello {
+  font-size: 64px;
+  font-weight: bold;
+  color: #FFFFFF;
+  letter-spacing: 6px;
+  margin: 0;
+  line-height: 1;
+}
+
+.wordLiar {
+  font-size: 48px;
+  font-weight: bold;
+  color: #EA5638;
+  letter-spacing: 4px;
+  animation: pulse 1.5s infinite;
+  margin: 0;
+  line-height: 1;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.subtext {
+  font-size: 14px;
+  color: #888888;
+  max-width: 400px;
+  text-align: center;
+  margin: 0;
+  line-height: 1.7;
+}
+
+.btnConfess {
+  background: transparent;
+  border: 1px solid #EA5638;
+  color: #EA5638;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  padding: 12px 32px;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  outline: none;
+}
+
+.btnConfess:hover {
+  background: #EA5638;
+  color: #000000;
+  box-shadow: 0 0 20px rgba(234, 86, 56, 0.4);
+}
