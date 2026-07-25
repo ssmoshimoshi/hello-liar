@@ -124,8 +124,8 @@ export default function FloatingNav() {
                   <span 
                     className={`text-[8px] font-mono uppercase tracking-[0.15em] transition-all duration-300 ${
                       item.active 
-                        ? 'font-bold underline underline-offset-4' 
-                        : 'opacity-75 hover:opacity-100'
+                        ? 'font-bold underline underline-offset-4 text-[var(--color-living-coral)]' 
+                        : 'opacity-75 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[var(--color-living-coral)]'
                     }`}
                   >
                     {item.label}
@@ -197,7 +197,7 @@ export default function FloatingNav() {
                     className={`text-[8px] font-mono uppercase tracking-[0.15em] transition-all duration-300 ${
                       item.active 
                         ? 'font-bold underline underline-offset-4' 
-                        : 'opacity-75 hover:opacity-100'
+                        : 'opacity-75 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[var(--color-living-coral)]'
                     }`}
                   >
                     {item.label}
