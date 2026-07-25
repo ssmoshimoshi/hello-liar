@@ -83,25 +83,23 @@ export default function FloatingNav() {
   };
 
   // Dual-Mode Navigation Architecture:
-  // 1. Write Page Mode: mix-blend-mode difference with stark white text for indestructible contrast across Coral/Mesh/Black stages.
-  // 2. Standard Mode: zero blend modes, standard idle gray with Living Coral (#FC766A) hover and #8c312f active.
-  const containerStyle = isWrite ? { mixBlendMode: 'difference' as const } : {};
+  // 1. Write Page Mode (EXCLUSIVELY): Luminous pure white text (#FFFFFF) with high opacity and subtle dark drop-shadow for guaranteed, crystal-clear readability across Living Coral, Black Mesh, and Pure Black transitions.
+  // 2. Standard Mode (ALL OTHER PAGES): STRICTLY UNTOUCHED. Standard idle gray with Living Coral (#FC766A) hover and #8c312f active.
   const containerOpacity = isWrite
-    ? 'opacity-20 hover:opacity-100 focus-within:opacity-100 text-white'
+    ? 'opacity-95 hover:opacity-100 focus-within:opacity-100 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]'
     : 'opacity-65 hover:opacity-100 focus-within:opacity-100 text-current';
 
   const labelBase = 'text-[8px] font-mono uppercase tracking-[0.12em] transition-all duration-300';
   const labelActive = isWrite
-    ? 'font-bold underline underline-offset-4 text-white'
+    ? 'font-bold underline underline-offset-4 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]'
     : 'font-bold underline underline-offset-4 text-[#FC766A]';
   const labelIdle = isWrite
-    ? 'opacity-75 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-white active:opacity-50'
+    ? 'opacity-90 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-white text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]'
     : 'opacity-65 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[#FC766A] active:text-[#8c312f]';
 
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-2 transition-opacity duration-700 select-none ${containerOpacity}`}
-      style={containerStyle}
     >
       {/* Left half — flex-1 ensures identical width to right half, pushing items toward center */}
       <div className="flex-1 flex items-center justify-end gap-x-1">
