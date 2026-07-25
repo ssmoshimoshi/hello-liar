@@ -1,36 +1,29 @@
-# Visi & Tujuan Produk (Product Goals & Vision): *Hello Liar*
+# Konsep Besar & Visi Utama: *Hello Liar*
 
-Dokumen ini disusun sebagai **Panduan Visi Utama (Product Requirements & Goals)** dari platform *Hello Liar*. Dokumen ini dirancang untuk diekspor dan dianalisis oleh entitas arsitek atau model AI eksternal guna membandingkan tujuan ideal dengan realitas kekurangan sistem saat ini.
+*"Everyone lies. Some write it down."*
+
+Dokumen ini memuat konsep murni, landasan psikologis, dan visi agung dari keberadaan *Hello Liar*, tanpa dicampuri oleh urusan teknis pemrograman.
 
 ---
 
-## 1. Identitas Inti & Filosofi
-**Slogan:** *"Everyone lies. Some write it down."*
-**Konsep Produk:** *Hello Liar* adalah platform *micro-blogging* dan pengakuan dosa anonim (digital confessional). Tempat di mana pengguna dapat melepaskan beban psikologis terberat mereka melalui tulisan pendek yang dikemas sebagai sebuah "kebohongan". Platform ini bukan media sosial konvensional, melainkan ruang katarsis gelap yang mengutamakan privasi absolut dan beban emosional dari sebuah teks.
+## 1. Premis Kehidupan (The Core Premise)
+Di dunia nyata, manusia diwajibkan memakai topeng. Kita menyembunyikan ketakutan terbesar, trauma terdalam, pikiran terlarang, hingga penyesalan paling kelam dari keluarga, pasangan, dan teman. Kita dituntut menjadi "benar" dan "sempurna". Akibatnya, pikiran-pikiran berat ini membusuk di dalam kepala tanpa pernah menemukan jalan keluar.
 
-## 2. Tujuan Psikologis UI/UX (Cathartic Minimalism)
-- **Minimalisme Mentah:** Estetika antarmuka tidak boleh terlihat seperti aplikasi *startup* komersial yang ceria. Desain harus terasa mentah, sinematik, dan sastrawi.
-- **Batasan Warna Ketat:** Hanya menggunakan Hitam (*Pitch Black*), Putih (*Pure White*), dan spektrum Abu-abu. Warna **Living Coral (`#FC766AFF`)** adalah satu-satunya warna aksen yang diizinkan, digunakan eksklusif untuk menandakan interaksi vital atau resonansi emosional.
-- **Tipografi Bersilangan:** Menggunakan font *serif* klasik (seperti *Playfair Display / Baskerville*) untuk bobot narasi cerita, dan font *sans-serif/mono* (seperti *Inter*) untuk elemen fungsional navigasi.
-- **Micro-Interactions yang Bernyawa:** Sistem harus merespons sentuhan pengguna (klik, usap, tahan) dengan transisi pegas (*spring animations*) dan *haptic feedback* yang halus, memberi kesan bahwa aplikasi ini "hidup" dan menyerap emosi pengguna.
+## 2. Solusi Paradoks (The Grand Concept)
+*Hello Liar* lahir sebagai sebuah ruang pengakuan dosa digital (*digital confessional*) yang menggunakan pendekatan psikologis terbalik: **Menyamarkan kejujuran absolut sebagai sebuah "kebohongan".**
 
-## 3. Arsitektur Interaksi Pengguna (User Flows)
-1. **The Write Page (`/write`):** 
-   - **Tujuan:** Ruang pelepasan rahasia. Layar kanvas kosong yang memisahkan diri dari sisa aplikasi. 
-   - **Aturan Spasial:** Desain harus menjamin fokus 100% pada area pengetikan. Teks harus memiliki kontras sempurna (*Luminous Flat White*) di atas latar belakang transisional (Hitam/Coral). Terdapat perlindungan ergonomis agar tombol *LEPASKAN* tidak tumpang tindih dengan teks cerita sepanjang apa pun.
-2. **The Swipe Feed (`/page.tsx` & `Read`):**
-   - **Tujuan:** Penjelajahan cerita berbasis penggeseran (*swiping*). 
-   - **Aturan Spasial:** Kartu cerita ditelusuri berdasarkan kategori (Uang, Keluarga, Asmara, Agama, dll). Navigasi harus sangat ramah ibu jari (*thumb-friendly*), menggunakan sistem grid rata tepi (*Edge Flush Architecture*) khusus untuk layar ponsel.
-3. **Menu Navigasi Mengambang (`FloatingNav.tsx`):**
-   - **Tujuan:** Kendali rute satu-tangan di bawah layar. Mengadopsi prinsip seimbang matematis; sayap kiri dan kanan menyebar ke tepi layar ponsel, sementara poros tombol tengah tetap tak tergoyahkan.
+Dengan melabeli setiap tulisan sebagai "kebohongan", pengguna terbebas dari beban moral, penghakiman sosial, dan rasa takut akan konsekuensi. Paradoks inilah yang membuat *Hello Liar* berpotensi menjadi tempat paling jujur di internet. Pengguna dapat meruntuhkan dinding pertahanan mereka dan melepaskan (*letting go*) beban psikologis terberat mereka ke dalam kekosongan ruang digital.
 
-## 4. Tumpukan Teknologi (Tech Stack & Architecture)
-- **Framework Utama:** Next.js (App Router), React 19, TypeScript.
-- **Styling & Animasi:** Tailwind CSS v4 (Murni, tanpa *library UI wrapper* seperti Shadcn/Bootstrap demi kontrol absolut), Framer Motion.
-- **Skalabilitas Internasional:** `next-intl` (Mendukung ID dan EN secara langsung).
-- **Infrastruktur Backend (Target):** Supabase (Authentication Anonim, PostgreSQL, RLS Policies untuk proteksi spam dan moderasi teks, Edge Functions).
+## 3. Visi Pengalaman Pengguna (The Cathartic Experience)
+*Hello Liar* sangat menentang konsep media sosial modern:
+- **Tanpa Identitas (Absolute Anonymity):** Tidak ada profil, nama pengguna, atau foto. Semua orang adalah anonim.
+- **Tanpa Validasi Palsu (Zero Vanity Metrics):** Tidak ada tombol *Like*, kolom komentar, atau jumlah pengikut. Tulisan tidak dibuat untuk pamer gengsi, melainkan murni untuk pelepasan emosi.
+- **Suasana Katartik & Mentah:** Aplikasi ini tidak boleh terasa ceria atau komersial. Ia harus terasa seperti ruangan gelap yang sunyi, di mana setiap kata yang diketik terasa memiliki bobot sastra. Desainnya menggunakan Hitam, Putih, dan warna emosional (*Living Coral*) sebagai penanda detak jantung emosi manusia.
 
-## 5. Parameter Kesuksesan (Success Metrics)
-- **Zero Friction Entry:** Pengguna baru dapat langsung mengkonsumsi atau membuang cerita dalam waktu kurang dari 5 detik sejak memuat halaman tanpa registrasi yang mengganggu.
-- **Performance Fidelity:** Animasi penggeseran dan kanvas *write* harus berjalan pada 60 FPS bahkan di perangkat ponsel Android kelas menengah ke bawah tanpa *thermal throttling*.
-- **Device Agnostic Alignment:** Tampilan antarmuka harus mempertahankan logika kerapian dan patokan garis batas yang sama indahnya saat direntangkan dari layar ponsel vertikal hingga monitor monitor PC lebar.
+## 4. Perjalanan Pembaca (The Reader's Journey)
+Pembaca datang untuk menelusuri isi kepala manusia lain. Tulisan-tulisan ini dikelompokkan ke dalam kategori fundamental kehidupan: *Uang, Keluarga, Pasangan, Karier, Diri Sendiri, Agama, Politik, Healing, Ghosting, hingga Overthinking*. 
+
+Saat pembaca mengusap layar dan membaca "kebohongan" orang lain, visi utama web ini tercapai: **Resonansi Emosional.** Pembaca menyadari bahwa mereka tidak sendirian dalam merasakan ketakutan, penderitaan, atau pikiran-pikiran aneh tersebut. Ada penyembuhan masal dalam penderitaan yang dibagikan secara sunyi.
+
+## 5. Tujuan Akhir (The Ultimate Goal)
+Menjadi ruang katarsis paling murni di era digital. Tempat di mana manusia bisa berbohong agar bisa sepenuhnya jujur pada diri mereka sendiri.
