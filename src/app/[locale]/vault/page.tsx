@@ -60,8 +60,8 @@ export default function VaultPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-24 px-6 md:px-12 pb-24">
-      <div className="max-w-4xl mx-auto">
+    <div className="w-full h-full overflow-y-auto hide-scrollbar bg-background text-foreground select-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="max-w-4xl mx-auto pt-16 pb-40 px-6 md:px-12 md:pt-24 md:pb-48">
         
         {/* Header Section */}
         <header className="mb-16 text-center md:text-left">
