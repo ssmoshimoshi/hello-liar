@@ -1,11 +1,11 @@
 {
   "Common": {
     "title": "Hello Liar",
-    "resonateBtn": "SAYA RASAKAN INI",
-    "doubtBtn": "RAGU",
+    "resonateBtn": "MERESAP",
+    "doubtBtn": "SANGSI",
     "shareIGBtn": "Bagikan ke IG Story",
     "copyLinkBtn": "Salin Tautan",
-    "releaseBtn": "Lepaskan",
+    "releaseBtn": "Kubur",
     "navHome": "Jelajah",
     "navWrite": "Bilik Suara",
     "writePlaceholder": "Tuliskan kebohongan Anda di sini...",
@@ -32,9 +32,9 @@
     "uploadBtn": "Terbitkan Karya",
     "navVault": "The Vault",
     "vaultTitle": "Gema Pikiran",
-    "vaultSubtitle": "Ruang ini hanya hidup di ingatan perangkat ini. Hapus cache Anda, dan semua kebohongan ini akan benar-benar lenyap.",
-    "vaultWritten": "Yang Kutulis",
-    "vaultResonated": "Yang Kurasa",
+    "vaultSubtitle": "Ruang ini hanya hidup di memori perangkatmu. Hapus cache, dan semua dosa ini akan musnah.",
+    "vaultWritten": "Yang Kuakui",
+    "vaultResonated": "Yang Meresap",
     "vaultEmptyWritten": "Anda belum menulis kebohongan apa pun.",
     "vaultEmptyResonated": "Anda belum merasakan kebohongan apa pun."
   }

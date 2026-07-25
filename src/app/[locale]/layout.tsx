@@ -4,6 +4,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import FloatingNav from '@/components/FloatingNav';
+import BackgroundParticles from '@/components/BackgroundParticles';
+import PageTransition from '@/components/PageTransition';
+import { TransitionProvider } from '@/components/TransitionContext';
 
 const baskerville = Libre_Baskerville({
   weight: ['400', '700'],
@@ -82,10 +85,15 @@ export default async function RootLayout({
     >
       <body suppressHydrationWarning className="h-[100dvh] w-full overflow-hidden flex flex-col font-serif bg-background text-foreground relative">
         <NextIntlClientProvider messages={messages}>
-          <FloatingNav />
-          <main className="flex-grow flex flex-col min-h-0 relative">
-            {children}
-          </main>
+          <TransitionProvider>
+            <BackgroundParticles />
+            <FloatingNav />
+            <main className="flex-grow flex flex-col min-h-0 relative pb-16">
+              <PageTransition>
+                {children}
+              </PageTransition>
+            </main>
+          </TransitionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

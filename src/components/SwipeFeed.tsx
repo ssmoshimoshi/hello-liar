@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, useMotionValue, useTransform, useAnimation, PanInfo, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { addResonatedLie } from '@/lib/deviceAuth';
@@ -298,17 +298,27 @@ interface CardProps {
 function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
   // Imperfect Stacking (Random Offset)
   const [offset] = useState(() => ({
-    x: (Math.random() - 0.5) * 12, // -6 to 6 px
-    y: (Math.random() - 0.5) * 12,
-    r: (Math.random() - 0.5) * 6   // -3 to 3 deg
+    x: (Math.random() - 0.5) * 28, // stackMaxOffsetX * 2
+    y: (Math.random() - 0.5) * 12, // stackMaxOffsetY * 2
+    r: (Math.random() - 0.5) * 12   // stackMaxRotate * 2
   }));
 
+  const grabOffset = useRef({ x: 0, y: 0 });
   const x = useMotionValue(offset.x);
   const y = useMotionValue(offset.y);
   const controls = useAnimation();
   
-  // Dynamic rotation: wider range so high velocity throws cause more spin, resting at random offset
-  const rotate = useTransform(x, [-500, offset.x, 500], [-30 + offset.r, offset.r, 30 + offset.r]);
+  const handlePointerDown = (e: React.PointerEvent) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    grabOffset.current.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+  };
+
+  // Dynamic rotation based on corner pull
+  const rotate = useTransform(x, [-500, offset.x, 500], [
+    -30 * (grabOffset.current.y || 0.1) + offset.r, 
+    offset.r, 
+    30 * (grabOffset.current.y || 0.1) + offset.r
+  ]);
   const scale = 1;
 
   // Background and text color transitions for swipe directions
@@ -334,7 +344,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
   const resonateOpacity = useTransform(x, [0, 100], [0, 1]);
 
   const handleDragEnd = async (e: any, info: PanInfo) => {
-    const threshold = 100;
+    const threshold = 50;
     const velocityX = info.velocity.x;
     const velocityY = info.velocity.y;
     const offsetX = info.offset.x;
@@ -342,8 +352,8 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
     // Check both offset and velocity for flick actions
     if (offsetX > threshold || velocityX > 400) {
       // Throw right with momentum
-      const throwX = Math.max(500, velocityX * 0.8);
-      const throwY = velocityY * 0.5; // follow Y momentum
+      const throwX = Math.max(500, velocityX * 2);
+      const throwY = velocityY * 2;
       
       await controls.start({ 
         x: throwX, 
@@ -354,8 +364,8 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       onSwipe('right');
     } else if (offsetX < -threshold || velocityX < -400) {
       // Throw left with momentum
-      const throwX = Math.min(-500, velocityX * 0.8);
-      const throwY = velocityY * 0.5;
+      const throwX = Math.min(-500, velocityX * 2);
+      const throwY = velocityY * 2;
       
       await controls.start({ 
         x: throwX, 
@@ -392,6 +402,8 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
   // Disable drag if it's currently revealing or not top
   const canDrag = isTop && !isRevealing;
 
+  const shadowString = `-18px 15px 14px -20px rgba(0,0,0,0.2)`;
+
   return (
     <motion.div
       className="absolute h-full aspect-[1/1.6] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
@@ -406,6 +418,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
       drag={canDrag ? true : false}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.6}
+      onPointerDown={handlePointerDown}
       onDragEnd={handleDragEnd}
       animate={controls}
       initial={{ opacity: 0, scale: 0.95 }}
@@ -430,8 +443,8 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
                 opacity: 1
               }
             : {
-                x: [0, -60, 30, offset.x],
-                y: [0, -60, -20, offset.y],
+                x: [0, -100, -50, offset.x],
+                y: [0, -15, -7.5, offset.y],
                 rotateY: [-180, -180, -90, 0],
                 rotateX: [0, 10, 5, 0],
                 rotateZ: [0, -15, 10, offset.r],
@@ -440,7 +453,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
               }
         }
         transition={{
-          duration: showCover ? 0 : 1.4,
+          duration: showCover ? 0 : 1.3,
           ease: showCover ? 'linear' : 'easeInOut',
           times: showCover ? undefined : [0, 0.4, 0.7, 1]
         }}
@@ -451,13 +464,15 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
           className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border-[0.5px] p-6 md:p-8 flex flex-col items-center justify-center"
           style={{ 
             backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
             backgroundColor,
             borderColor,
             color: textColor,
+            boxShadow: shadowString,
           }}
         >
           {/* Author/Entry Number */}
-          <div className="absolute top-6 left-6 flex items-center justify-between w-[calc(100%-3rem)] pointer-events-none opacity-40 z-10">
+          <div className="absolute top-6 left-6 flex items-center justify-between w-[calc(100%-3rem)] pointer-events-none opacity-40">
             <span className="font-mono text-[8px] md:text-[9px] tracking-widest uppercase">
               Nᵒ {lie.id.slice(0, 8)}
             </span>
@@ -465,7 +480,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
           {isFirstCard && (
             <motion.div 
-              className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none z-10"
+              className="absolute bottom-8 left-0 w-full flex justify-between px-8 text-[10px] font-mono tracking-widest uppercase opacity-40 pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5 }}
@@ -476,7 +491,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
           )}
 
           {/* Core Content */}
-          <div className="relative w-full flex-1 flex items-center justify-center z-10 pointer-events-none overflow-hidden">
+          <div className="relative w-full flex-1 flex items-center justify-center pointer-events-none overflow-hidden">
             <p 
               className={`text-center leading-loose relative w-full ${getTextClasses()}`}
               style={{ fontFamily: 'var(--font-special-elite)' }}
@@ -487,7 +502,7 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
 
           {/* Direction Hints during drag */}
           <motion.div 
-            className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
+            className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
             style={{ opacity: strikeOpacity }}
           >
             empty
@@ -507,8 +522,10 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
           style={{ 
             backgroundColor: 'var(--color-living-coral)',
             backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
             rotateY: 180,
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            boxShadow: shadowString,
           }}
         />
         

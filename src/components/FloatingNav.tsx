@@ -1,7 +1,8 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useTransition } from './TransitionContext';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSoundEffect } from '@/hooks/useSoundEffect';
@@ -10,7 +11,7 @@ import { triggerHaptic } from '@/lib/haptics';
 export default function FloatingNav() {
   const locale = useLocale();
   const pathname = usePathname();
-  const router = useRouter();
+  const { transitionPush } = useTransition();
   const [isOpen, setIsOpen] = useState(false);
   const { playSound } = useSoundEffect();
 
@@ -23,7 +24,7 @@ export default function FloatingNav() {
     if (locale === newLocale) return;
     triggerHaptic('light');
     const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-    router.push(newPath);
+    transitionPush(newPath);
   };
 
   const handleReset = () => {
@@ -36,20 +37,20 @@ export default function FloatingNav() {
   const leftItems = [
     {
       id: 'home',
-      label: locale === 'en' ? 'read' : 'baca',
-      action: () => { triggerHaptic('light'); router.push(`/${locale}`); },
+      label: locale === 'en' ? 'read' : 'selami',
+      action: () => { triggerHaptic('light'); transitionPush(`/${locale}`); },
       active: isHome,
     },
     {
       id: 'gallery',
-      label: locale === 'en' ? 'gallery' : 'galeri',
-      action: () => { triggerHaptic('light'); router.push(`/${locale}/illustrated`); },
+      label: locale === 'en' ? 'gallery' : 'wujud',
+      action: () => { triggerHaptic('light'); transitionPush(`/${locale}/illustrated`); },
       active: isGallery,
     },
     {
       id: 'write',
-      label: locale === 'en' ? 'write' : 'tulis',
-      action: () => { triggerHaptic('light'); router.push(`/${locale}/write`); },
+      label: locale === 'en' ? 'write' : 'akui',
+      action: () => { triggerHaptic('light'); transitionPush(`/${locale}/write`); },
       active: isWrite,
     },
   ];
@@ -58,8 +59,8 @@ export default function FloatingNav() {
   const rightItems = [
     {
       id: 'vault',
-      label: locale === 'en' ? 'vault' : 'arsip',
-      action: () => { triggerHaptic('light'); router.push(`/${locale}/vault`); },
+      label: locale === 'en' ? 'vault' : 'pusara',
+      action: () => { triggerHaptic('light'); transitionPush(`/${locale}/vault`); },
       active: isVault,
     },
     {
@@ -87,7 +88,7 @@ export default function FloatingNav() {
   // 2. Standard Mode (ALL OTHER PAGES): STRICTLY UNTOUCHED. Standard idle gray with Living Coral (#FC766A) hover and #8c312f active.
   const containerOpacity = isWrite
     ? 'opacity-95 hover:opacity-100 focus-within:opacity-100 text-white'
-    : 'opacity-65 hover:opacity-100 focus-within:opacity-100 text-current';
+    : 'opacity-65 hover:opacity-100 focus-within:opacity-100 text-current backdrop-blur-md bg-background/80';
 
   const labelBase = 'text-[8px] font-mono uppercase tracking-[0.12em] transition-all duration-300';
   const labelActive = isWrite
@@ -99,7 +100,7 @@ export default function FloatingNav() {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-6 md:px-2 transition-opacity duration-700 select-none ${containerOpacity}`}
+      className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-6 md:px-2 transition-all duration-700 select-none ${containerOpacity}`}
     >
       {/* Left half — flex-1 ensures identical width to right half, pushing items toward center on PC, edge-flush on mobile */}
       <div className="flex-1 flex items-center justify-between md:justify-end gap-x-1 md:gap-x-1">

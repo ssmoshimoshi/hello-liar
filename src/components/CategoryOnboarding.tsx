@@ -2,11 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocale } from 'next-intl';
 
 const CATEGORIES = [
-  'Uang', 'Keluarga', 'Pasangan', 'Pertemanan', 
-  'Karier', 'Diri Sendiri', 'Agama', 'Politik', 
-  'Healing', 'Ghosting', 'Overthinking'
+  { id: 'greed', idLabel: 'Keserakahan', enLabel: 'Greed' },
+  { id: 'blood', idLabel: 'Darah', enLabel: 'Blood' },
+  { id: 'lust', idLabel: 'Nafsu', enLabel: 'Lust' },
+  { id: 'deceit', idLabel: 'Kepalsuan', enLabel: 'Deceit' },
+  { id: 'ambition', idLabel: 'Ambisi', enLabel: 'Ambition' },
+  { id: 'ego', idLabel: 'Ego', enLabel: 'Ego' },
+  { id: 'sin', idLabel: 'Dosa', enLabel: 'Sin' },
+  { id: 'power', idLabel: 'Kuasa', enLabel: 'Power' },
+  { id: 'escape', idLabel: 'Pelarian', enLabel: 'Escape' },
+  { id: 'coward', idLabel: 'Pengecut', enLabel: 'Cowardice' },
+  { id: 'anxiety', idLabel: 'Gelisah', enLabel: 'Anxiety' }
 ];
 
 interface Props {
@@ -14,6 +23,7 @@ interface Props {
 }
 
 export default function CategoryOnboarding({ onComplete }: Props) {
+  const locale = useLocale();
   const [selected, setSelected] = useState<string[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(true); // Default to true to prevent flash
@@ -57,7 +67,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6"
+        className="fixed inset-0 z-50 flex flex-col items-center justify-center p-6"
       >
         <div className="max-w-2xl w-full">
           <motion.h1 
@@ -67,7 +77,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
             className="text-3xl md:text-5xl font-medium mb-8 text-center text-[var(--color-living-coral)]"
             style={{ fontFamily: 'var(--font-baskerville)' }}
           >
-            Kebohongan apa yang ingin kamu baca hari ini?
+            {locale === 'en' ? 'What lie do you wish to dive into today?' : 'Dusta apa yang ingin kau selami hari ini?'}
           </motion.h1>
           
           <motion.div 
@@ -78,15 +88,15 @@ export default function CategoryOnboarding({ onComplete }: Props) {
           >
             {CATEGORIES.map(cat => (
               <button
-                key={cat}
-                onClick={() => toggleCategory(cat)}
+                key={cat.id}
+                onClick={() => toggleCategory(cat.id)}
                 className={`px-4 py-2 text-xs font-mono uppercase tracking-widest transition-colors duration-300 ${
-                  selected.includes(cat) 
+                  selected.includes(cat.id) 
                     ? 'text-[var(--color-living-coral)] font-bold' 
                     : 'text-[var(--gray-400)] hover:text-foreground'
                 }`}
               >
-                {cat}
+                {locale === 'en' ? cat.enLabel : cat.idLabel}
               </button>
             ))}
           </motion.div>
@@ -100,7 +110,7 @@ export default function CategoryOnboarding({ onComplete }: Props) {
                 onClick={handleProceed}
                 className="px-8 py-3 text-foreground font-mono text-sm uppercase tracking-widest font-bold hover:text-[var(--color-living-coral)] transition-colors"
               >
-                Masuk
+                {locale === 'en' ? 'Open the Gates' : 'Buka Gerbang'}
               </motion.button>
             )}
           </div>

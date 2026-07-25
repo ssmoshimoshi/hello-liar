@@ -60,7 +60,7 @@ export default function VaultPage() {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto hide-scrollbar bg-background text-foreground select-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <div className="w-full h-full overflow-y-auto hide-scrollbar text-foreground select-none" style={{ WebkitOverflowScrolling: 'touch' }}>
       <div className="max-w-4xl mx-auto pt-16 pb-40 px-6 md:px-12 md:pt-24 md:pb-48">
         
         {/* Header Section */}
@@ -122,7 +122,7 @@ export default function VaultPage() {
                 return (
                   <div 
                     key={lie.id} 
-                    className="p-8 md:p-12 border-b border-[var(--gray-200)] hover:border-[var(--gray-500)] transition-colors bg-background flex flex-col justify-between"
+                    className="p-8 md:p-12 border-b border-[var(--gray-200)] hover:border-[var(--gray-500)] transition-colors flex flex-col justify-between"
                   >
                     <p 
                       className={`text-foreground leading-loose tracking-wide ${
