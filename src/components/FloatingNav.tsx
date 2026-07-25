@@ -95,7 +95,7 @@ export default function FloatingNav() {
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="absolute right-full mr-1 sm:mr-2 flex items-center gap-1 sm:gap-3 overflow-hidden pr-1 whitespace-nowrap"
+              className="absolute right-full mr-0.5 flex items-center gap-0 overflow-hidden whitespace-nowrap"
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: 'auto' }}
               exit={{ opacity: 0, width: 0 }}
@@ -109,7 +109,7 @@ export default function FloatingNav() {
                     item.action();
                     setIsOpen(false);
                   }}
-                  className="px-2 py-3.5 min-w-[44px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
+                  className="px-1.5 py-3.5 min-w-[36px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
                   initial={{ opacity: 0, x: 25, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 15, scale: 0.8 }}
@@ -122,10 +122,10 @@ export default function FloatingNav() {
                   aria-label={item.id}
                 >
                   <span 
-                    className={`text-[9px] sm:text-xs font-mono uppercase tracking-[0.25em] sm:tracking-[0.35em] transition-all duration-300 ${
+                    className={`text-[8px] font-mono uppercase tracking-[0.15em] transition-all duration-300 ${
                       item.active 
-                        ? 'font-bold underline underline-offset-4 scale-105' 
-                        : 'opacity-75 hover:opacity-100 hover:tracking-[0.4em]'
+                        ? 'font-bold underline underline-offset-4' 
+                        : 'opacity-75 hover:opacity-100'
                     }`}
                   >
                     {item.label}
@@ -167,7 +167,7 @@ export default function FloatingNav() {
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="absolute left-full ml-1 sm:ml-2 flex items-center gap-1 sm:gap-3 overflow-hidden pl-1 whitespace-nowrap"
+              className="absolute left-full ml-0.5 flex items-center gap-0 overflow-hidden whitespace-nowrap"
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: 'auto' }}
               exit={{ opacity: 0, width: 0 }}
@@ -181,7 +181,7 @@ export default function FloatingNav() {
                     item.action();
                     setIsOpen(false);
                   }}
-                  className="px-2 py-3.5 min-w-[44px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
+                  className="px-1.5 py-3.5 min-w-[36px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
                   initial={{ opacity: 0, x: -25, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: -15, scale: 0.8 }}
@@ -194,10 +194,10 @@ export default function FloatingNav() {
                   aria-label={item.id}
                 >
                   <span 
-                    className={`text-[9px] sm:text-xs font-mono uppercase tracking-[0.25em] sm:tracking-[0.35em] transition-all duration-300 ${
+                    className={`text-[8px] font-mono uppercase tracking-[0.15em] transition-all duration-300 ${
                       item.active 
-                        ? 'font-bold underline underline-offset-4 scale-105' 
-                        : 'opacity-75 hover:opacity-100 hover:tracking-[0.4em]'
+                        ? 'font-bold underline underline-offset-4' 
+                        : 'opacity-75 hover:opacity-100'
                     }`}
                   >
                     {item.label}
