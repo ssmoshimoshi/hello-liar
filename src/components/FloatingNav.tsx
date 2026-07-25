@@ -83,18 +83,18 @@ export default function FloatingNav() {
   };
 
   // Dual-Mode Navigation Architecture:
-  // 1. Write Page Mode (EXCLUSIVELY): Luminous pure white text (#FFFFFF) with high opacity and subtle dark drop-shadow for guaranteed, crystal-clear readability across Living Coral, Black Mesh, and Pure Black transitions.
+  // 1. Write Page Mode (EXCLUSIVELY): Luminous flat pure white text (#FFFFFF) with high opacity and zero drop shadows for clean, raw minimalism across all transitions.
   // 2. Standard Mode (ALL OTHER PAGES): STRICTLY UNTOUCHED. Standard idle gray with Living Coral (#FC766A) hover and #8c312f active.
   const containerOpacity = isWrite
-    ? 'opacity-95 hover:opacity-100 focus-within:opacity-100 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]'
+    ? 'opacity-95 hover:opacity-100 focus-within:opacity-100 text-white'
     : 'opacity-65 hover:opacity-100 focus-within:opacity-100 text-current';
 
   const labelBase = 'text-[8px] font-mono uppercase tracking-[0.12em] transition-all duration-300';
   const labelActive = isWrite
-    ? 'font-bold underline underline-offset-4 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]'
+    ? 'font-bold underline underline-offset-4 text-white'
     : 'font-bold underline underline-offset-4 text-[#FC766A]';
   const labelIdle = isWrite
-    ? 'opacity-90 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-white text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]'
+    ? 'opacity-90 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-white text-white'
     : 'opacity-65 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[#FC766A] active:text-[#8c312f]';
 
   return (
