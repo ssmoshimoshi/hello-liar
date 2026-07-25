@@ -82,20 +82,28 @@ export default function FloatingNav() {
     setIsOpen(!isOpen);
   };
 
-  // Adaptive opacity per page context — no blend mode needed
+  // Dual-Mode Navigation Architecture:
+  // 1. Write Page Mode: mix-blend-mode difference with stark white text for indestructible contrast across Coral/Mesh/Black stages.
+  // 2. Standard Mode: zero blend modes, standard idle gray with Living Coral (#FC766A) hover and #8c312f active.
+  const containerStyle = isWrite ? { mixBlendMode: 'difference' as const } : {};
   const containerOpacity = isWrite
-    ? 'opacity-20 hover:opacity-100 focus-within:opacity-100'
-    : 'opacity-50 hover:opacity-100 focus-within:opacity-100';
+    ? 'opacity-20 hover:opacity-100 focus-within:opacity-100 text-white'
+    : 'opacity-65 hover:opacity-100 focus-within:opacity-100 text-current';
 
   const labelBase = 'text-[8px] font-mono uppercase tracking-[0.12em] transition-all duration-300';
-  const labelActive = 'font-bold underline underline-offset-4 text-[#FC766A]';
-  const labelIdle = 'opacity-60 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[#FC766A] active:text-[#8c312f]';
+  const labelActive = isWrite
+    ? 'font-bold underline underline-offset-4 text-white'
+    : 'font-bold underline underline-offset-4 text-[#FC766A]';
+  const labelIdle = isWrite
+    ? 'opacity-75 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-white active:opacity-50'
+    : 'opacity-65 hover:opacity-100 hover:underline hover:underline-offset-4 hover:text-[#FC766A] active:text-[#8c312f]';
 
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 z-50 flex items-center h-14 px-2 transition-opacity duration-700 select-none ${containerOpacity}`}
+      style={containerStyle}
     >
-      {/* Left half — flex-1 ensures equal width as right half, items pushed to right edge (toward center) */}
+      {/* Left half — flex-1 ensures identical width to right half, pushing items toward center */}
       <div className="flex-1 flex items-center justify-end gap-x-1">
         <AnimatePresence>
           {isOpen && leftItems.map((item, index) => (
@@ -117,7 +125,7 @@ export default function FloatingNav() {
         </AnimatePresence>
       </div>
 
-      {/* Center toggle — mathematically pinned at exact midpoint of full-width bar */}
+      {/* Center toggle — mathematically anchored at exact midpoint of full-width bar */}
       <button
         onClick={handleToggle}
         className="mx-2 min-w-[48px] min-h-[48px] flex items-center justify-center text-current cursor-pointer focus:outline-none transition-transform duration-200 active:scale-90 shrink-0"
