@@ -85,15 +85,17 @@ export default function FloatingNav() {
 
   return (
     <div 
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center transition-opacity duration-700 max-w-[98vw] select-none ${containerOpacity}`}
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center transition-opacity duration-700 select-none ${containerOpacity}`}
       style={{ mixBlendMode: 'difference' }}
     >
-      <div className="flex items-center text-white">
-        {/* Left Horizontal Wing (Spring Elastic Expansion) */}
+      {/* Pivot container ensures central toggle is immovably anchored at exactly 50% axis */}
+      <div className="relative flex items-center justify-center text-white">
+        
+        {/* Left Horizontal Wing (Absolutely Anchored to the Left of Toggle) */}
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="flex items-center gap-1 sm:gap-3 mr-2 sm:mr-4 overflow-hidden"
+              className="absolute right-full mr-1 sm:mr-2 flex items-center gap-1 sm:gap-3 overflow-hidden pr-1 whitespace-nowrap"
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: 'auto' }}
               exit={{ opacity: 0, width: 0 }}
@@ -107,7 +109,6 @@ export default function FloatingNav() {
                     item.action();
                     setIsOpen(false);
                   }}
-                  /* Generous touch target with zero visual boundaries */
                   className="px-2 py-3.5 min-w-[44px] min-h-[48px] flex items-center justify-center transition-all duration-300 group focus:outline-none"
                   initial={{ opacity: 0, x: 25, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -135,10 +136,10 @@ export default function FloatingNav() {
           )}
         </AnimatePresence>
 
-        {/* Minimalist Bare (+) / (x) Trigger with 48x48px Invisible Touch Padding & Zero Border/Fog */}
+        {/* Minimalist Bare (+) / (x) Trigger with 48x48px Invisible Touch Padding & Zero Center Shift */}
         <button
           onClick={handleToggle}
-          className="min-w-[48px] min-h-[48px] p-2 flex items-center justify-center text-white cursor-pointer select-none focus:outline-none transition-transform duration-300 active:scale-95"
+          className="relative z-10 min-w-[48px] min-h-[48px] p-2 flex items-center justify-center text-white cursor-pointer select-none focus:outline-none transition-transform duration-300 active:scale-95"
           aria-label="Toggle Navigation Wing"
         >
           <motion.div
@@ -146,7 +147,6 @@ export default function FloatingNav() {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="flex items-center justify-center pointer-events-none"
           >
-            {/* Razor-sharp vector wire plus icon, pure geometry without background circles */}
             <svg 
               width="24" 
               height="24" 
@@ -163,11 +163,11 @@ export default function FloatingNav() {
           </motion.div>
         </button>
 
-        {/* Right Horizontal Wing (Spring Elastic Expansion) */}
+        {/* Right Horizontal Wing (Absolutely Anchored to the Right of Toggle) */}
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="flex items-center gap-1 sm:gap-3 ml-2 sm:ml-4 overflow-hidden"
+              className="absolute left-full ml-1 sm:ml-2 flex items-center gap-1 sm:gap-3 overflow-hidden pl-1 whitespace-nowrap"
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: 'auto' }}
               exit={{ opacity: 0, width: 0 }}

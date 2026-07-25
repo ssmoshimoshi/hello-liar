@@ -228,7 +228,7 @@ export default function WritePage() {
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="w-full h-full max-w-4xl flex flex-col items-center justify-center z-10 pt-16 pb-4 md:pb-8"
+        className="w-full h-full max-w-4xl flex flex-col items-center justify-between z-10 pt-24 pb-28 sm:pb-36"
       >
         {errorMsg && (
           <div className="absolute top-24 px-4 py-2 border border-white text-white text-xs font-mono tracking-widest bg-white/10 backdrop-blur-sm rounded-full">
@@ -236,11 +236,11 @@ export default function WritePage() {
           </div>
         )}
         
-        <div className="relative w-full flex-1 flex flex-col justify-center min-h-[30dvh]">
+        <div className="relative w-full max-w-2xl px-6 flex-1 flex flex-col items-center justify-center max-h-[45dvh] sm:max-h-[50dvh] overflow-y-auto hide-scrollbar my-auto">
           {/* Dynamic Fading Placeholder */}
           {content.length === 0 && phase === 'writing' && (
             <div 
-              className="absolute inset-0 w-full h-full text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center pointer-events-none"
+              className="absolute inset-0 w-full h-full text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed tracking-wide text-center pointer-events-none flex items-center justify-center"
               style={{
                 fontFamily: 'var(--font-special-elite)',
                 color: 'rgba(255, 255, 255, 0.3)',
@@ -257,7 +257,7 @@ export default function WritePage() {
             ref={textareaRef}
             value={content}
             onChange={handleChange}
-            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-2xl md:text-3xl lg:text-4xl leading-loose tracking-wide text-center focus:ring-0 z-10 ${
+            className={`absolute inset-0 w-full h-full bg-transparent border-none outline-none resize-none text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed tracking-wide text-center focus:ring-0 z-10 ${
               phase !== 'writing' ? 'opacity-0 blur-xl scale-95 pointer-events-none' : 'opacity-100 blur-0 scale-100'
             }`}
             style={{ 
@@ -274,8 +274,8 @@ export default function WritePage() {
           />
         </div>
         
-        {/* Bottom Actions */}
-        <div className={`mt-6 md:mt-12 shrink-0 transition-all duration-700 z-10 flex justify-center ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+        {/* Bottom Actions Elevated Safely Above Navigation */}
+        <div className={`mb-2 sm:mb-6 shrink-0 transition-all duration-700 z-10 flex justify-center ${content.length > 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
           <button
             type="button"
             onPointerDown={startHold}
