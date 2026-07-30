@@ -6,6 +6,9 @@ import { supabase } from '@/lib/supabase';
 import { addResonatedLie } from '@/lib/deviceAuth';
 import type { Database } from '@/types/database';
 import { useSoundEffect } from '@/hooks/useSoundEffect';
+import Image from 'next/image';
+import cardBackImage from '../../public/card-back.png';
+import { useLocale } from 'next-intl';
 
 type Lie = Database['public']['Tables']['lies']['Row'];
 
@@ -296,6 +299,8 @@ interface CardProps {
 }
 
 function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total }: CardProps) {
+  const locale = useLocale();
+
   // Imperfect Stacking (Random Offset)
   const [offset] = useState(() => ({
     x: (Math.random() - 0.5) * 28, // stackMaxOffsetX * 2
@@ -324,20 +329,20 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
   // Background and text color transitions for swipe directions
   const backgroundColor = useTransform(
     x,
-    [-150, 0, 150],
-    ['rgba(0,0,0,0.9)', 'rgba(255,255,255,1)', 'rgba(252,118,106,0.9)']
+    [-150, -30, 0, 30, 150],
+    ['rgba(0,0,0,0.9)', 'rgba(255,255,255,1)', 'rgba(255,255,255,1)', 'rgba(255,255,255,1)', 'rgba(252,118,106,0.9)']
   );
   
   const textColor = useTransform(
     x,
-    [-150, 0, 150],
-    ['rgba(255,255,255,1)', 'rgba(0,0,0,1)', 'rgba(255,255,255,1)']
+    [-150, -30, 0, 30, 150],
+    ['rgba(255,255,255,1)', 'rgba(0,0,0,1)', 'rgba(0,0,0,1)', 'rgba(0,0,0,1)', 'rgba(255,255,255,1)']
   );
 
   const borderColor = useTransform(
     x,
-    [-150, 0, 150],
-    ['rgba(255,255,255,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)']
+    [-150, -30, 0, 30, 150],
+    ['rgba(255,255,255,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.1)']
   );
 
   const strikeOpacity = useTransform(x, [0, -100], [0, 1]);
@@ -384,7 +389,9 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
     }
   };
 
-  const content = (lie as any).content_id || lie.content_en;
+  const content = locale === 'en' 
+    ? (lie as any).content_en || (lie as any).content_id
+    : (lie as any).content_id || (lie as any).content_en;
 
   useEffect(() => {
     controls.start({ opacity: 1, scale: 1, transition: { duration: 0.3 } });
@@ -485,8 +492,8 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5 }}
             >
-              <span>&lt; Empty</span>
-              <span>Echoes &gt;</span>
+              <span>&lt; {locale === 'en' ? 'Doubt' : 'Sangsi'}</span>
+              <span>{locale === 'en' ? 'Resonate' : 'Meresap'} &gt;</span>
             </motion.div>
           )}
 
@@ -505,20 +512,20 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
             className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em]"
             style={{ opacity: strikeOpacity }}
           >
-            empty
+            {locale === 'en' ? 'doubt' : 'sangsi'}
           </motion.div>
 
           <motion.div 
             className="absolute bottom-24 pointer-events-none text-[11px] font-mono uppercase tracking-[0.4em] z-10"
             style={{ opacity: resonateOpacity }}
           >
-            echoes
+            {locale === 'en' ? 'resonate' : 'meresap'}
           </motion.div>
         </motion.div>
 
         {/* BACK FACE (Living Coral Cover & Counter) */}
         <motion.div 
-          className="absolute inset-0 w-full h-full rounded-2xl flex flex-col items-center justify-center"
+          className="absolute inset-0 w-full h-full rounded-2xl flex flex-col items-center justify-center overflow-hidden"
           style={{ 
             backgroundColor: 'var(--color-living-coral)',
             backfaceVisibility: 'hidden',
@@ -527,7 +534,16 @@ function SwipeCard({ lie, isTop, isRevealing, isFirstCard, onSwipe, index, total
             pointerEvents: 'none',
             boxShadow: shadowString,
           }}
-        />
+        >
+          <Image
+            src={cardBackImage}
+            alt="Card Cover"
+            fill
+            className="object-cover object-center"
+            sizes="(max-width: 768px) 100vw, 400px"
+            priority
+          />
+        </motion.div>
         
       </motion.div>
     </motion.div>

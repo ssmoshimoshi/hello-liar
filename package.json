@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@studio-freight/lenis": "^1.0.42",
     "@supabase/supabase-js": "^2.110.7",
     "d3-delaunay": "^6.0.4",
     "framer-motion": "^12.42.2",
